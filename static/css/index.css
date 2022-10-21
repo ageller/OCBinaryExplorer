@@ -41,22 +41,26 @@ html,body{
 .pageSideBySide {
 	position: relative;
 	width: 100%;
-	min-height: 600px;
 	background-color: var(--lightGray);
 	color: var(--darkGray);
+	display: inline-block;
 }
 .pageSideBySide .child{
 	width: 50%;
+	min-width:200px; 
 	float: left;
-	min-height: 600px;
 }
+.pageSideBySide .smallerChild{
+	width:10%; 
+	min-width:200px; 
+	float: left;
+}
+
 .pageSideBySide .child .insetLeft{
-	margin: 0px 5px 0px 0px;
-	min-height: 600px;
+	margin: 5px 5px 5px 0px;
 }
 .pageSideBySide .child .insetRight{
-	margin: 0px 0px 0px 5px;
-	min-height: 600px;
+	margin: 5px 0px 5px 5px;
 }
 
 .content{
@@ -72,13 +76,13 @@ html,body{
 .linkDiv{
 	cursor: pointer;
 	border-radius: 10px;
-	box-shadow: 0 1px 2px rgba(0,0,0,0.5);
-	transition: box-shadow transform 0.3s ease-in-out;
-	-webkit-transition: box-shadow,transform 0.3s ease-in-out;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+	transition: box-shadow 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	-webkit-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 .linkDiv:hover{
 	box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-	transform: scale(1.01, 1.01)
+	transform: scale(1.01, 1.01);
 }
 
 .blueBackground{
@@ -104,6 +108,32 @@ html,body{
 }
 
 
+.profileImage{
+	cursor: pointer;
+	width:100%; 
+	border-radius:50%; 
+	box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+	/*shape-outside:circle(50%)*/
+	transition: box-shadow 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	-webkit-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.profileImage:hover{
+	box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+	transform: scale(1.01, 1.01);
+}
+.centerV{
+	line-height: 200px;
+	height: 200px;
+/*	margin:  0;
+	position: absolute;
+	top: 50%;
+	transform: translate(0%, -50%);*/
+}
+.centerV p{
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+}
 /* font styles */
 .header{
 	font-family: 'Rubik', sans-serif;
@@ -152,4 +182,21 @@ a:active {
 }
 .footer a:active {
 	color: var(--darkGray);
+}
+
+
+/* animating on scroll */
+.animateScroll {
+	opacity: 0;
+	transform: scale(0.6);
+}
+
+.animateScroll {
+	transition: opacity 1.5s ease, transform 1.5s ease;
+	-webkit-transition: opacity 1.5s ease, transform 1.5s ease;
+}
+
+.scrollTransition {
+    opacity: 1;
+    transform: none;
 }
