@@ -4,11 +4,11 @@ from flask_socketio import SocketIO, emit
 from datetime import datetime
 from json import dumps
 
-app = Flask(__name__)
-async_mode = "eventlet" #"eventlet" is WAY better than "threading"
 
 app = Flask(__name__) 
 app.config['SECRET_KEY'] = 'BASE-9visualizer!'
+
+async_mode = "eventlet" #"eventlet" is WAY better than "threading"
 socketio = SocketIO(app, async_mode = async_mode)
 
 namespace = '/base9'
@@ -35,4 +35,4 @@ def default2():
     return render_template("index.html")
 
 if __name__ == '__main__':
-    socketio.run(app, port = 5000, use_reloader = True)
+    socketio.run(app, host='0.0.0.0', port = 5000, use_reloader = True)

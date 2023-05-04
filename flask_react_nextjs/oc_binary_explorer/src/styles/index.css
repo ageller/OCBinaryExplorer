@@ -1,0 +1,217 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&family=Rubik:wght@400;700&family=Ubuntu:ital,wght@0,400;1,500&display=swap');
+
+:root {
+	--purple:#7D5BA6;
+	--mint:#ACFCD9;
+	--turqoise:#2CB59C;
+	--lightGray:#EBEBEB;
+	--darkGray:#292929;
+	--rose:#FC6471;
+	--blue:#3066BE;
+
+}
+
+html,body{
+	font: 1vw sans-serif;
+	padding: 0;
+	margin: 0;
+	background-color: white;
+	overflow: auto;
+	font-family: 'Ubuntu', sans-serif;
+	font-size: calc(10px + 1vw);
+	color: var(--darkGray);
+}
+
+/* page divs */
+.topNav {
+	position: relative;
+	width: 100%;
+	/*min-height: 200px;*/
+	background-color: var(--blue);
+}
+.topNav .content {
+	padding: 10px;
+	color: var(--lightGray);
+}
+
+.fullWidthImage {
+	position: relative;
+	width: 100%;
+	min-height: 600px;
+	background-color: var(--darkGray);
+}
+
+.pageSideBySide {
+	position: relative;
+	width: 100%;
+	background-color: var(--lightGray);
+	color: var(--darkGray);
+	display: inline-block;
+}
+.pageSideBySide .child{
+	width: 50%;
+	min-width:200px; 
+	float: left;
+}
+.pageSideBySide .smallerChild{
+	width:10%; 
+	min-width:200px; 
+	float: left;
+}
+
+.pageSideBySide .child .insetLeft{
+	margin: 5px 5px 5px 0px;
+}
+.pageSideBySide .child .insetRight{
+	margin: 5px 0px 5px 5px;
+}
+
+.pageInset{
+    position: relative;
+	width: 100%;
+	background-color: var(--lightGray);
+	color: var(--darkGray);
+	display: inline-block;
+}
+.pageInset .inset{
+    margin:5px;
+}
+
+.content{
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 10px;
+}
+
+.division{
+	/*min-height: 100px;*/
+}
+
+.linkDiv{
+	cursor: pointer;
+	border-radius: 10px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+	transition: box-shadow 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	-webkit-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.linkDiv:hover{
+	box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+	transform: scale(1.01, 1.01);
+}
+
+.blueBackground{
+	background-color: var(--blue) !important;
+}
+.mintBackground{
+	background-color: var(--mint) !important;
+}
+.lightGrayBackground{
+	background-color: var(--lightGray) !important;
+}
+.darkGrayBackground{
+	background-color: var(--darkGray) !important;
+}
+.turqoiseColor{
+	color:  var(--turqoise) !important;
+}
+.darkGrayColor{
+	color:  var(--darkGray) !important;
+}
+.lightGrayColor{
+	color:  var(--lightGray) !important;
+}
+
+
+.profileImage{
+	cursor: pointer;
+	width:100%; 
+	border-radius:50%; 
+	box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+	/*shape-outside:circle(50%)*/
+	transition: box-shadow 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	-webkit-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.profileImage:hover{
+	box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+	transform: scale(1.01, 1.01);
+}
+.centerV{
+	line-height: 200px;
+	height: 200px;
+/*	margin:  0;
+	position: absolute;
+	top: 50%;
+	transform: translate(0%, -50%);*/
+}
+.centerV p{
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+}
+/* font styles */
+.header{
+	font-family: 'Rubik', sans-serif;
+	font-size: calc(10px + 5vw);
+	font-weight: bold;
+	color:  var(--mint);
+}
+.headerSmall{
+	font-family: 'Rubik', sans-serif;
+	font-size: calc(10px + 4vw);
+	font-weight: bold;
+	color:  var(--mint);
+}
+.subheader{
+	font-family: 'Ubuntu', sans-serif;
+	font-size: calc(10px + 2.25vw);
+	font-style: italic;
+	color:  var(--lightGray);
+}
+
+
+/* links */
+a:link {
+	color: var(--rose);
+}
+a:visited {
+	color: var(--rose);
+}
+a:hover {
+	color: var(--rose);
+	/*font-style: italic;*/
+}
+a:active {
+	color: var(--rose);
+}
+
+.footer a:link {
+	color: var(--darkGray);
+}
+.footer a:visited {
+	color: var(--darkGray);
+}
+.footer a:hover {
+	color: var(--darkGray);
+	/*font-style: italic;*/
+}
+.footer a:active {
+	color: var(--darkGray);
+}
+
+
+/* animating on scroll */
+.animateScroll {
+	opacity: 0;
+	transform: scale(0.6);
+}
+
+.animateScroll {
+	transition: opacity 1.5s ease, transform 1.5s ease;
+	-webkit-transition: opacity 1.5s ease, transform 1.5s ease;
+}
+
+.scrollTransition {
+    opacity: 1;
+    transform: none;
+}
