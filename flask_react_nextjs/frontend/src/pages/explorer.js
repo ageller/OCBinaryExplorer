@@ -7,13 +7,14 @@ import Head from 'next/head';
 function TestServer({}) {
     // usestate for setting a javascript
     // object for storing and using data
-    const [data, setdata] = useState({
+    const [data, setData] = useState({
         name: "",
         age: 0,
         date: "",
         programming: "",
     });
-  
+    const [loading, setLoading] = useState(true);
+
     // Using useEffect for single rendering
     useEffect(() => {
         // Using fetch to fetch the api from 
@@ -22,24 +23,32 @@ function TestServer({}) {
             .then(res => res.json())
             .then(data => {
                 // Setting a data from api
-                setdata({
+                setData({
                     name: data.Name,
                     age: data.Age,
                     date: data.Date,
                     programming: data.programming,
                 });
+                setLoading(false);
             })
     }, []);
   
     return (
-        <div >
-            <h2>(React+next.js) + flask test</h2>
-            {/* Calling a data from setdata for showing */}
-            <p>{data.name}</p>
-            <p>{data.age}</p>
-            <p>{data.date}</p>
-            <p>{data.programming}</p>
-        </div>
+        (loading) ?
+            (
+                <div>
+                    <p>Loading...</p>
+                </div>
+            ) : (
+                <div >
+                    <h2>(React+next.js) + flask test</h2>
+                    {/* Calling a data from setdata for showing */}
+                    <p>{data.name}</p>
+                    <p>{data.age}</p>
+                    <p>{data.date}</p>
+                    <p>{data.programming}</p>
+                </div>
+            )
     );
   
 }

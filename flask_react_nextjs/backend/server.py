@@ -15,8 +15,10 @@ api = Api(app)
 
 
 # for the simple test below
+# import time
 import datetime
 x = datetime.datetime.now()
+
 
 # regular version
 # @app.route("/api/data")
@@ -31,6 +33,7 @@ x = datetime.datetime.now()
 # RESTful version
 class getData(Resource):
     def get(self):
+        # time.sleep(2) # to set the conditional that would say loading
         return {
                 'Name':"geek", 
                 "Age":"22",
