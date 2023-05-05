@@ -6,6 +6,8 @@ following tutorials here :
 
 may be useful later
 - https://alexanderhupfer.medium.com/how-to-deploy-next-js-with-flask-the-easy-way-9025a61c8765
+- https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
+- https://vercel.com/templates/python/flask-hello-world
 
 Connecting the next.js frontend to the flask backend requires modification of the ```frontend/next.config.js``` file to add all the api endpoint.  See that file for details.
 
