@@ -1,5 +1,10 @@
 // index.html
 import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import Head from 'next/head';
+
+// my scripts
 import addScrollAnimator from '../hooks/scrollAnimator';
 
 function HeaderTop({ title, subtitle, subsubtitle }) {
@@ -50,13 +55,15 @@ function ExplorerEntry({content}){
 
                 <div className = "animateScrollWrapper">
                     <div className = "animateScroll scrollTransition">
-                        <div className = "inset blueBackground linkDiv" style = {{minHeight: '600px'}}>
-                            <div className = "content">
-                                <div className = "headerSmall">Tables and Plots</div>
-                                <div className = "subheader">View, filter, sort, create, edit, and download data and plots</div>
+                        <Link href = "explorer">
+                            <div className = "inset blueBackground linkDiv" style = {{minHeight: '600px'}}>
+                                <div className = "content">
+                                    <div className = "headerSmall">Tables and Plots</div>
+                                    <div className = "subheader">View, filter, sort, create, edit, and download data and plots</div>
 
+                                </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -116,7 +123,9 @@ function Contributor({ name, link, image, title, affiliation }){
             <hr/>
             <div className = "smallerChild" style = {{paddingRight:'20px'}}>
                 <div className = "insetLeft">
-                    <a href = {link}><img className = "profileImage" src={image} style = {{width:'200px'}}/></a>
+                    <a href = {link}>
+                        <Image className = "profileImage" src = {image} height = {200} width = {200} alt = {name}/>
+                        </a>
                 </div>
             </div>
             <div className = "child">
@@ -163,28 +172,28 @@ export default function HomePage() {
             {
                 name: "Aaron Geller",
                 link: "https://faculty.wcas.northwestern.edu/aaron-geller/index.html",
-                image: "images/AMG_photo_square.png",
+                image: "/images/AMG_photo_square.png",
                 title: "Research Assistant Professor, Project PI",
                 affiliation: "Northwestern Unversity - CIERA"
             },
             {
                 name: "Anna Childs",
                 link: "",
-                image: "images/Smiley_Face.png",
+                image: "/images/Smiley_Face.png",
                 title: "Postdoctoral Associate",
                 affiliation: "Northwestern Unversity - CIERA"
             },
             {
                 name: "Erin Motherway",
                 link: "",
-                image: "images/Smiley_Face.png",
+                image: "/images/Smiley_Face.png",
                 title: "Undergraduate Researcher",
                 affiliation: "Embry-Riddle Aeronautical University"
             },
             {
                 name: "Claire Zwicker",
                 link: "",
-                image: "images/Smiley_Face.png",
+                image: "/images/Smiley_Face.png",
                 title: "Undergraduate Researcher",
                 affiliation: "Illinois Institute of Technology"
             }
@@ -192,7 +201,10 @@ export default function HomePage() {
         papers:[]
     }
     return (
-        <div>
+        <>
+            <Head>
+                <title>OC Binary Explorer</title>
+            </Head>
             <HeaderTop {...headerProps} />
             <HeaderAnimation />
             <HeaderExplanation />
@@ -200,6 +212,6 @@ export default function HomePage() {
             <Credit {...creditProps}/>
             <Footer />
             {/* <button onClick={handleClick}>Like ({likes})</button> */}
-        </div>
+        </>
     );
 }

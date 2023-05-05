@@ -1,5 +1,8 @@
 // https://coolcssanimation.com/how-to-trigger-a-css-animation-on-scroll/
 
+// I am using useEffect, but I could load it this way instead
+// https://nextjs.org/learn/basics/assets-metadata-css/third-party-javascript
+
 import { useEffect } from 'react';
 
 const addScrollAnimator = function(){
