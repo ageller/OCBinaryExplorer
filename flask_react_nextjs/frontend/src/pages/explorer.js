@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import {HeaderTop, SideBar } from './components'
 
 // this is a simple test to see how I can grab data from the server
 // eventually I can build this out into grabbing read data and then plotting results
@@ -55,14 +56,40 @@ function TestServer({}) {
 
 
 export default function Explorer() {
+
+    let headerProps = {
+        title:"Open Cluster Binary Explorer",
+    }
+
+    let sideBarProps = {
+        buttons: [
+            {
+                label: 'scatter',
+                icon: 'scatter_plot',
+            }, 
+            {
+                label: 'hist.',
+                icon: 'Leaderboard',
+            },
+            {
+                label: 'table',
+                icon: 'Table',
+            }
+        ]
+    }
+
     return (
         <>
             <Head>
                 <title>OC Binary Explorer</title>
             </Head>
-            <h1>Hello World</h1>
-            <TestServer />
-            <Link href = "/">Back to home</Link>
+            <HeaderTop {...headerProps} />
+            <div className = "explorerContent">
+                <SideBar {...sideBarProps} />
+                <h1>Hello World</h1>
+                <TestServer />
+                <Link href = "/">Back to home</Link>
+            </div>
         </>
     );
 }

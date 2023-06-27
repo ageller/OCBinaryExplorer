@@ -22,7 +22,7 @@ python server.py
 
 # terminal 2
 cd frontend/
-npm start
+npm run dev
 ```
 
 

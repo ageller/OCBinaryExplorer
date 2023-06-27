@@ -1,5 +1,6 @@
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&family=Rubik:wght@400;700&family=Ubuntu:ital,wght@0,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 :root {
 	--purple:#7D5BA6;
@@ -29,6 +30,7 @@ html,body{
 	width: 100%;
 	/*min-height: 200px;*/
 	background-color: var(--blue);
+    z-index:10;
 }
 .topNav .content {
 	padding: 10px;
@@ -88,12 +90,41 @@ html,body{
 	/*min-height: 100px;*/
 }
 
+.sideBar{
+    position:absolute;
+    left:0;
+    top:0;
+    z-index:2;
+    height:100%;
+    width:100px;
+    background-color: var(--mint);
+    padding-top:100px;
+}
+.sideBar .button{
+    width:70px;
+    height:90px;
+    border: 1px solid black;
+    border-radius:10px;
+    margin: 15px;
+}
+.sideBar .button .icon{
+    font-size:70px;
+}
+.sideBar .button .label{
+    font-size:20px;
+    text-align:center;
+    margin-top:-10px
+}
+.explorerContent{
+    margin-left:110px;
+}
+
 .linkDiv{
 	cursor: pointer;
 	border-radius: 10px;
 	box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-	transition: box-shadow 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-	-webkit-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	transition: box-shadow 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+	-webkit-transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 .linkDiv:hover{
 	box-shadow: 0 5px 15px rgba(0,0,0,0.8);
@@ -121,6 +152,7 @@ html,body{
 .lightGrayColor{
 	color:  var(--lightGray) !important;
 }
+
 
 
 .profileImage{
@@ -214,4 +246,13 @@ a:active {
 .scrollTransition {
     opacity: 1;
     transform: none;
+}
+
+/* google material icons */
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
 }
