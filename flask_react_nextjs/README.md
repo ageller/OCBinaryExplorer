@@ -14,7 +14,7 @@ Connecting the next.js frontend to the flask backend requires modification of th
 Then to start the backend and frontend:
 
 ```
-# on windows side
+# on WSL
 
 # terminal 1
 cd backend/

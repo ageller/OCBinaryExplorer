@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import {HeaderTop, SideBar } from './components'
+import {HeaderTop, SideBar, ExplorerContainer } from './components'
+import { GlobalStateContext } from '../context/globalState';
 
 // this is a simple test to see how I can grab data from the server
 // eventually I can build this out into grabbing read data and then plotting results
@@ -56,6 +57,7 @@ function TestServer({}) {
 
 
 export default function Explorer() {
+    const {globalState} = useContext(GlobalStateContext);
 
     let headerProps = {
         title:"Open Cluster Binary Explorer",
@@ -64,19 +66,38 @@ export default function Explorer() {
     let sideBarProps = {
         buttons: [
             {
-                label: 'scatter',
-                icon: 'scatter_plot',
-            }, 
+                label: 'table',
+                icon: 'Table',
+            },
             {
                 label: 'hist.',
                 icon: 'Leaderboard',
             },
             {
-                label: 'table',
-                icon: 'Table',
-            }
+                label: 'scatter',
+                icon: 'scatter_plot',
+            }, 
+
+
         ]
     }
+
+    const renderExplorerComponents = () => {
+        const divs = [];
+        for (let i = 0; i < globalState.explorerTableCount; i++) {
+            let index = i;
+            divs.push(<ExplorerContainer key = {index} {...{label:'table', count:index}}/>);
+        }
+        for (let i = 0; i < globalState.explorerHistCount; i++) {
+            let index = i + globalState.explorerTableCount;
+            divs.push(<ExplorerContainer key = {index} {...{label:'histogram', count:index}}/>);
+        }
+        for (let i = 0; i < globalState.explorerScatterCount; i++) {
+            let index = i + globalState.explorerTableCount + globalState.explorerHistCount;
+            divs.push(<ExplorerContainer key = {index} {...{label:'scatter', count:index}}/>);
+        }    
+        return divs;
+    };
 
     return (
         <>
@@ -89,6 +110,7 @@ export default function Explorer() {
                 <h1>Hello World</h1>
                 <TestServer />
                 <Link href = "/">Back to home</Link>
+                {renderExplorerComponents()}
             </div>
         </>
     );
