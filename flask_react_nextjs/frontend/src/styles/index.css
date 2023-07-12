@@ -125,11 +125,13 @@ html,body{
     border-radius:6px;
     background-color:var(--light);
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    resize:both;
+    overflow:auto;
+    z-index:1;
 }
 .explorerTopBar{
     left:0px;
     top:0px; 
-    width:500px;
     height:40px;
     background-color: var(--dark);
     display: flex;

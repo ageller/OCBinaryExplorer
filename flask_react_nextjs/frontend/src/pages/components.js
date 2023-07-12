@@ -154,9 +154,21 @@ function ExplorerContainer({label, count}){
     const left = 120 + count*5;
 
     const divRef = useRef(null);
-    const [styles, setStyles] = useState({ left: left, top: top });
+    const [pos, setPos] = useState({ left: left, top: top });
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
+
+    const getMaxZValue = () => {
+        // get the maximum z-index for all the divs so that I can place the next one on top
+        var z = 1;
+        const elems = document.querySelectorAll('.explorerContainer');
+        for (const elem of elems) {
+            z = Math.max(elem.style.zIndex, z);
+        }
+
+        return z;
+    }
+    const [zIndex, setZIndex] = useState(getMaxZValue());
 
     const handleDragStart = (e) => {
         e.stopPropagation();
@@ -166,6 +178,7 @@ function ExplorerContainer({label, count}){
             diffX: e.screenX - boundingRect.left,
             diffY: e.screenY - boundingRect.top
         });
+        setZIndex(getMaxZValue() + 1);
         e.dataTransfer.setData('text/plain', ''); // Required for dragging in Firefox
         e.dataTransfer.setDragImage(divRef.current,e.screenX - boundingRect.left, e.screenY - boundingRect.top);
         setIsDragging(true);
@@ -177,7 +190,7 @@ function ExplorerContainer({label, count}){
         const top = e.screenY - diffPos.diffY;
 
         // for some reason this seems necessary to avoid the last value (right before mouseUp) which is all zeros
-        if (e.screenX != 0 || e.screenY != 0) setStyles({ left: left, top: top });
+        if (e.screenX != 0 || e.screenY != 0) setPos({ left: left, top: top });
     };
   
     const handleDragEnd = () => {
@@ -186,11 +199,7 @@ function ExplorerContainer({label, count}){
   
 
     const handleClick = (e) => {
-        const elems = document.querySelectorAll('.explorerContainer');
-        for (const elem of elems) {
-            elem.style.zIndex = 1;
-        }
-        e.currentTarget.style.zIndex = 10;
+        setZIndex(getMaxZValue() + 1);
     }
 
     // I need to fix this so that it closes the right one!
@@ -215,7 +224,7 @@ function ExplorerContainer({label, count}){
         <div 
             ref = {divRef}
             className = {className} 
-            style = {{ ...styles, position: "absolute" }}
+            style = {{ ...pos, position: "absolute", zIndex: zIndex}}
             onClick = {handleClick}
         >
             <div className = "explorerTopBar grabbable" 
@@ -241,7 +250,6 @@ function SideBarButton({label, icon}){
     const handleButtonClick = () => {
         var key = label;
         if (label == 'hist.' ) key = 'histogram';
-        console.log(key, globalState)
         appendExplorerDiv(key);
     };
 

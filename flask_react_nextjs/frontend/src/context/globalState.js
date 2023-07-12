@@ -6,13 +6,18 @@ export const GlobalStateContext = createContext();
 export const GlobalStateProvider = ({ children }) => {
     const [globalState, setGlobalState] = useState({
         explorerDivs : [],
-        showExplorerDivs : []
+        showExplorerDivs : [],
       });
 
     // syntax if there is an object in the globaleState
     // const setExplorerDivCount = (key, value) => {
     //     console.log(key, value)
     //     if (key != '') setGlobalState((prevState) => ({...prevState, explorerDivCount: {...prevState.explorerDivCount, [key]: value}}));
+    // };
+
+    // syntax for a normal setter
+    // const setExplorerZIndex = (value) => {
+    //     setGlobalState((prevState) => ({ ...prevState, explorerZIndex: value }));
     // };
 
     const appendExplorerDiv = (item) => {
@@ -27,6 +32,8 @@ export const GlobalStateProvider = ({ children }) => {
             return {...prevState, showExplorerDivs: updatedItems,};
         });
     }; 
+
+
 
     return (
         <GlobalStateContext.Provider value={{ globalState,  appendExplorerDiv, setShowExplorerDivAtIndex}}>
