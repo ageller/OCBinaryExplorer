@@ -84,18 +84,9 @@ export default function Explorer() {
 
     const renderExplorerComponents = () => {
         const divs = [];
-        for (let i = 0; i < globalState.explorerTableCount; i++) {
-            let index = i;
-            divs.push(<ExplorerContainer key = {index} {...{label:'table', count:index}}/>);
+        for (let i = 0; i < globalState.explorerDivs.length; i++) {
+            if (globalState.showExplorerDivs[i]) divs.push(<ExplorerContainer key = {i} {...{label:globalState.explorerDivs[i], count:i}}/>);
         }
-        for (let i = 0; i < globalState.explorerHistCount; i++) {
-            let index = i + globalState.explorerTableCount;
-            divs.push(<ExplorerContainer key = {index} {...{label:'histogram', count:index}}/>);
-        }
-        for (let i = 0; i < globalState.explorerScatterCount; i++) {
-            let index = i + globalState.explorerTableCount + globalState.explorerHistCount;
-            divs.push(<ExplorerContainer key = {index} {...{label:'scatter', count:index}}/>);
-        }    
         return divs;
     };
 

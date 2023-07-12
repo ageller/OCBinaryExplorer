@@ -146,10 +146,11 @@ function Paper({ content }){
 
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
-    const {globalState, setExplorerTableCount, setExplorerHistCount, setExplorerScatterCount} = useContext(GlobalStateContext);
+    const {globalState, setShowExplorerDivAtIndex} = useContext(GlobalStateContext);
 
-    const className = `explorerContainer ${label}${count}`;
-    const top = 100 + count*45;
+    const className = `explorerContainer ${label} index${count}`;
+    const maxSize = window.innerHeight - 600;
+    const top = 100 + (count*45 % maxSize);
     const left = 120 + count*5;
 
     const divRef = useRef(null);
@@ -174,7 +175,6 @@ function ExplorerContainer({label, count}){
     const handleDragging = (e) => {
         const left = e.screenX - diffPos.diffX;
         const top = e.screenY - diffPos.diffY;
-        console.log('dragging', left, top, diffPos.diffX, e.screenX, e)
 
         // for some reason this seems necessary to avoid the last value (right before mouseUp) which is all zeros
         if (e.screenX != 0 || e.screenY != 0) setStyles({ left: left, top: top });
@@ -194,10 +194,15 @@ function ExplorerContainer({label, count}){
     }
 
     // I need to fix this so that it closes the right one!
-    const handleClose = () => {
-        if (label == 'table') setExplorerTableCount(Math.max(globalState.explorerTableCount - 1, 0));
-        if (label == 'hist.' || label =='histogram') setExplorerHistCount(Math.max(globalState.explorerHistCount - 1, 0));
-        if (label == 'scatter') setExplorerScatterCount(Math.max(globalState.explorerScatterCount - 1, 0));
+    const handleClose = (e) => {
+        var className = e.target.parentElement.parentElement.parentElement.className;
+        var i1 = className.indexOf('index') + 5;
+        var substr = className.substring(i1);
+        var index = className.substring(i1);
+        var i2 = substr.indexOf(' ');
+        if (i2 > 0) index = className.substring(i1, i2);
+        console.log(className, i1, substr, i2, index);
+        setShowExplorerDivAtIndex(index, false);
     };
 
     const handleSettings = () => {
@@ -231,12 +236,13 @@ function ExplorerContainer({label, count}){
 }
 
 function SideBarButton({label, icon}){
-    const {globalState, setExplorerTableCount, setExplorerHistCount, setExplorerScatterCount} = useContext(GlobalStateContext);
+    const {globalState, appendExplorerDiv} = useContext(GlobalStateContext);
 
     const handleButtonClick = () => {
-        if (label == 'table') setExplorerTableCount(globalState.explorerTableCount + 1);
-        if (label == 'hist.') setExplorerHistCount(globalState.explorerHistCount + 1);
-        if (label == 'scatter') setExplorerScatterCount(globalState.explorerScatterCount + 1);
+        var key = label;
+        if (label == 'hist.' ) key = 'histogram';
+        console.log(key, globalState)
+        appendExplorerDiv(key);
     };
 
 
