@@ -20,7 +20,7 @@ html,body{
 	background-color: white;
 	overflow: auto;
 	font-family: 'Ubuntu', sans-serif;
-	font-size: calc(10px + 1vw);
+	font-size: 16px;
 	color: var(--dark);
 }
 
@@ -221,19 +221,19 @@ html,body{
 /* font styles */
 .header{
 	font-family: 'Rubik', sans-serif;
-	font-size: calc(10px + 5vw);
+	font-size: 50px;
 	font-weight: bold;
 	color:  var(--foreground);
 }
 .headerSmall{
 	font-family: 'Rubik', sans-serif;
-	font-size: calc(10px + 4vw);
+	font-size: 40px;
 	font-weight: bold;
 	color:  var(--foreground);
 }
 .subheader{
 	font-family: 'Ubuntu', sans-serif;
-	font-size: calc(10px + 2.25vw);
+	font-size: 30px;
 	font-style: italic;
 	color:  var(--light);
 }

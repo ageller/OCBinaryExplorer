@@ -156,7 +156,7 @@ function ExplorerContainer({label, count}){
     const left = left0 + count*5;
 
     const divRef = useRef(null);
-    const [pos, setPos] = useState({ left: left, top: top });
+    const [pos, setPos] = useState({ left: left, top: top, maxWidth: window.innerWidth - left0, maxHeight: window.innerHeight - top0 });
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
 
@@ -191,9 +191,11 @@ function ExplorerContainer({label, count}){
         const boundingRect = e.currentTarget.parentElement.getBoundingClientRect();
         const left = Math.min(Math.max(left0, e.screenX - diffPos.diffX), window.innerWidth - boundingRect.width);
         const top = Math.min(Math.max(top0, e.screenY - diffPos.diffY), window.innerHeight - boundingRect.height);
+        const maxWidth = window.innerWidth - left;
+        const maxHeight = window.innerHeight - top;
 
         // for some reason this seems necessary to avoid the last value (right before mouseUp) which is all zeros
-        if (e.screenX != 0 || e.screenY != 0) setPos({ left: left, top: top });
+        if (e.screenX != 0 || e.screenY != 0) setPos({ left: left, top: top, maxWidth: maxWidth, maxHeight: maxHeight });
     };
   
     const handleDragEnd = () => {
@@ -268,7 +270,7 @@ function SideBarButton({label, icon}){
 function SideBar({buttons}){
     return (
         <div className = "sideBar">
-            <div style = {{height:'100px'}}></div>
+            <div style = {{height:'80px'}}></div>
             {buttons.map((data, index) => (
                 <SideBarButton key = {index} {...data}/>
             ))}
