@@ -148,10 +148,12 @@ function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
     const {globalState, setShowExplorerDivAtIndex} = useContext(GlobalStateContext);
 
+    const top0 = document.querySelector('.topNav').getBoundingClientRect().height;
+    const left0 = document.querySelector('.sideBar').getBoundingClientRect().width;
     const className = `explorerContainer ${label} index${count}`;
     const maxSize = window.innerHeight - 600;
-    const top = 100 + (count*45 % maxSize);
-    const left = 120 + count*5;
+    const top = top0 + (count*45 % maxSize);
+    const left = left0 + count*5;
 
     const divRef = useRef(null);
     const [pos, setPos] = useState({ left: left, top: top });
@@ -186,8 +188,9 @@ function ExplorerContainer({label, count}){
     };
   
     const handleDragging = (e) => {
-        const left = e.screenX - diffPos.diffX;
-        const top = e.screenY - diffPos.diffY;
+        const boundingRect = e.currentTarget.parentElement.getBoundingClientRect();
+        const left = Math.min(Math.max(left0, e.screenX - diffPos.diffX), window.innerWidth - boundingRect.width);
+        const top = Math.min(Math.max(top0, e.screenY - diffPos.diffY), window.innerHeight - boundingRect.height);
 
         // for some reason this seems necessary to avoid the last value (right before mouseUp) which is all zeros
         if (e.screenX != 0 || e.screenY != 0) setPos({ left: left, top: top });

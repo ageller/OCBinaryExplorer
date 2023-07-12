@@ -43,7 +43,7 @@ function TestServer({}) {
                 </div>
             ) : (
                 <div >
-                    <h2>(React+next.js) + flask test</h2>
+                    <h2>(React+next.js) + flask test <br/> will be replaced with instructions on how to use</h2>
                     {/* Calling a data from setdata for showing */}
                     <p>{data.name}</p>
                     <p>{data.age}</p>
