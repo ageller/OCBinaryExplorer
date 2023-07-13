@@ -19,40 +19,90 @@ function HeaderTop({ title, subtitle, subsubtitle }) {
 
 }
 
-function HeaderAnimation({image}){
-    // include an animation (or image) that will play when the page loads and is the size of the open window minus height of header (TO DO)
-    return(
-        <div className = "fullWidthImage"></div>
+function HeaderContent(){
+    // include an animation (or better image) that will play when the page loads(TO DO)
+    const [windowHeight, setWindowHeight] = useState(0);
+    const [windowWidth, setWindowWidth] = useState(0);
+    const [top0, setTop0] = useState(0);
 
-    )
-}
+    useEffect(() => {
 
-function HeaderExplanation({content}){
-    // include text
-    // could update this to send the text in the prop
+        setTop0(document.querySelector('.topNav').getBoundingClientRect().height);
+
+        // Function to handle window resize event
+        const handleResize = () => {
+            setWindowHeight(window.innerHeight);
+            setWindowWidth(window.innerWidth);
+        };
+    
+        // Set initial window height
+        setWindowHeight(window.innerHeight);
+        setWindowWidth(window.innerWidth);
+    
+        // Add event listener for window resize
+        window.addEventListener('resize', handleResize);
+    
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const imgh = windowHeight - top0;
+    const imgw = windowWidth - 20; // 20 for the scrollbar (probably a better way to achieve this!)
+    const eh = 100;
+    const etop = windowHeight - eh;
+    const imgurl = "/images/OC_Gaia_background_v1.png"; // make a better image, maybe from my pleiades movie?
     return(
-        <div className = "division darkBackgroundColor">
-        <div className = "content">
-            <div className = "subheader lightColor">[Explanation of the analysis]</div>
-            <div className = "lightColor" style = {{ marginTop: '10px' }}>[Some text about analysis and BASE-9]</div>
-        </div>
-    </div> 
+        <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
+            <div className = "fullWidthImage" style={{ backgroundImage: `url(${imgurl})` }}>
+            </div>
+            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw, height:eh, backgroundColor:'rgba(0,0,0,0.7)' }}>
+                <div className = "subheader lightColor">[Explanation of the analysis]</div>
+                <div className = "lightColor" style = {{ marginTop: '10px' }}>[Some text about analysis and BASE-9]</div>
+            </div>
+        </div> 
+
+
     )
 }
 
 function ExplorerEntry({content}){
-    // include some image?
+    // include some image
     // something about "click here to enter"
+    const [windowHeight, setWindowHeight] = useState(0);
+    const [divHeight, setDivHeight] = useState(0);
+
+    useEffect(() => {
+        setDivHeight(document.querySelector('#explorerEntryHeader').getBoundingClientRect().height + 40);
+
+        // Function to handle window resize event
+        const handleResize = () => {
+            setWindowHeight(window.innerHeight);
+        };
+    
+        // Set initial window height
+        setWindowHeight(window.innerHeight);
+    
+        // Add event listener for window resize
+        window.addEventListener('resize', handleResize);
+        console.log('checking', windowHeight, divHeight);
+    
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return(
-        <div className = "pageInset foregroundBackgroundColor">
+        <div className = "pageInset foregroundBackgroundColor" id="explorerEntryDiv" style = {{height: windowHeight}}>
             <div className = "content"  style = {{minHeight:'700px', width:'100%'}}>
-                <div className = "header darkColor">Interactive data explorer</div>
+                <div className = "header darkColor" id = "explorerEntryHeader">Interactive data explorer</div>
 
                 <div className = "animateScrollWrapper">
                     <div className = "animateScroll scrollTransition">
                         <Link href = "explorer">
-                            <div className = "inset bannerBackground linkDiv" style = {{minHeight: '600px'}}>
+                            <div className = "inset bannerBackground linkDiv" style = {{height: windowHeight - divHeight}}>
                                 <div className = "content">
                                     <div className = "headerSmall">Tables and Plots</div>
                                     <div className = "subheader">View, filter, sort, create, edit, and download data and plots</div>
@@ -69,11 +119,10 @@ function ExplorerEntry({content}){
 }
 
 function Credit({ contributors, papers }){
-    console.log('check', contributors)
 
     return(
 
-        <div className = "division lightColor">
+        <div className = "division lightColor" id = "creditDiv">
             <div className = "content" style = {{minHeight:'700px', width:'100%"'}}>
                 <div className = "headerSmall darkColor">Credit</div>
                 <div className = "subheader darkColor" style = {{margin:'20px 0px 20px 0px'}}>Contributors</div>
@@ -207,7 +256,6 @@ function ExplorerContainer({label, count}){
         setZIndex(getMaxZValue() + 1);
     }
 
-    // I need to fix this so that it closes the right one!
     const handleClose = (e) => {
         var className = e.target.parentElement.parentElement.parentElement.className;
         var i1 = className.indexOf('index') + 5;
@@ -283,5 +331,5 @@ function SideBar({buttons}){
 // https://stackoverflow.com/questions/33840150/onclick-doesnt-render-new-react-component
 
 
-export {HeaderTop, HeaderAnimation, HeaderExplanation, ExplorerEntry, Credit, Footer, Contributor, Paper, SideBar, ExplorerContainer}
+export {HeaderTop, HeaderContent, ExplorerEntry, Credit, Footer, Contributor, Paper, SideBar, ExplorerContainer}
 

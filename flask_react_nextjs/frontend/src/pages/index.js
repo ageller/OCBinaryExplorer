@@ -1,7 +1,7 @@
 // index.html
 import { useState } from 'react';
 import Head from 'next/head';
-import {HeaderTop, HeaderAnimation, HeaderExplanation, ExplorerEntry, Credit, Footer, Contributor, Paper} from './components'
+import {HeaderTop, HeaderContent, ExplorerEntry, Credit, Footer, Contributor, Paper} from './components'
 
 // my scripts
 import addScrollAnimator from '../hooks/scrollAnimator';
@@ -63,8 +63,7 @@ export default function HomePage() {
                 <title>OC Binary Explorer</title>
             </Head>
             <HeaderTop {...headerProps} />
-            <HeaderAnimation />
-            <HeaderExplanation />
+            <HeaderContent />
             <ExplorerEntry />
             <Credit {...creditProps}/>
             <Footer />
