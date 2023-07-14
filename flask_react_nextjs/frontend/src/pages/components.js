@@ -67,36 +67,15 @@ function HeaderContent(){
             camera.position.z = 0.1;
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
-            console.log(width, height)
             sceneContainerRef.current.appendChild(renderer.domElement);
             const controls = new TrackballControls(camera, renderer.domElement);
             controls.noZoom = true;
             controls.noPan = true;
             return { scene, camera, controls, renderer };
         };
+
     
-        // Add objects to the scene
-        const addObjects = (scene, coordinates) => {
-            const objs = [];
-            console.log('coordinates', coordinates);
-            coordinates.forEach(({name, x, y, z, rh}) => {
-                const geometry = new THREE.SphereGeometry( parseFloat(rh), parseFloat(rh), parseFloat(rh) );
-                const wireframe = new THREE.WireframeGeometry( geometry );
-                const line = new THREE.LineSegments( wireframe );
-                line.material.depthTest = false;
-                line.material.opacity = 1;
-                line.material.transparent = false;
-                const colorValue = getComputedStyle(document.documentElement).getPropertyValue('--foreground');
-                const color = new THREE.Color(colorValue.trim());
-                line.material.color = color;
-                line.position.set(parseFloat(x), parseFloat(y), parseFloat(z));
-                scene.add(line);
-                objs.push(line);
-            })
-            return objs;
-        };
-    
-            // Add points to the scene
+        // Add points to the scene
         const addPoints = (scene, coordinates) => {
             const vertices = [];
             const sizes = [];
@@ -242,7 +221,6 @@ function ExplorerEntry({content}){
     
         // Add event listener for window resize
         window.addEventListener('resize', handleResize);
-        console.log('checking', windowHeight, divHeight);
     
         // Cleanup the event listener on component unmount
         return () => {
@@ -419,7 +397,6 @@ function ExplorerContainer({label, count}){
         var index = className.substring(i1);
         var i2 = substr.indexOf(' ');
         if (i2 > 0) index = className.substring(i1, i2);
-        console.log(className, i1, substr, i2, index);
         setShowExplorerDivAtIndex(index, false);
     };
 
