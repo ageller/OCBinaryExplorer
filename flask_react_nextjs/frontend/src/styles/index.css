@@ -40,27 +40,6 @@ html,body{
 	color: var(--light);
 }
 
-.fullWidthImage {
-	position: relative;
-	width: 100%;
-    height: 0;
-	background-color: var(--dark);
-    padding-bottom: 100%;  
-    overflow: hidden; /* Ensure the image is clipped to the container */
-}
-.fullWidthImage::before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 .pageSideBySide {
 	position: relative;
 	width: 100%;
@@ -326,4 +305,9 @@ a:active {
 }
 #creditDiv {
     scroll-snap-align: start;
+}
+
+.canvas{
+    width:100%;
+    height:100%;
 }

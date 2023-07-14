@@ -3,6 +3,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { GlobalStateContext } from '../context/globalState';
 
+import * as THREE from 'three';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import csv from 'csv-parser';
+
 function HeaderTop({ title, subtitle, subsubtitle }) {
     return (
         <div className = "topNav">
@@ -24,8 +28,11 @@ function HeaderContent(){
     const [windowHeight, setWindowHeight] = useState(0);
     const [windowWidth, setWindowWidth] = useState(0);
     const [top0, setTop0] = useState(0);
+    const [sceneContainerStyle, setSceneContainerStyle] = useState({width:"100%", height: '500px'});
+    const sceneContainerRef = useRef(null);
 
     useEffect(() => {
+        // get the size of the container
 
         setTop0(document.querySelector('.topNav').getBoundingClientRect().height);
 
@@ -48,16 +55,165 @@ function HeaderContent(){
         };
     }, []);
 
+    useEffect(() => {
+        // Set up the Three.js scene
+        // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
+        const setupScene = () => {
+            const width = window.innerWidth - 20; //for scroll bar
+            const height = window.innerHeight - top0;
+            setSceneContainerStyle({width: width, height: height});
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width/height, 0.1, 1e5);
+            camera.position.z = 0.1;
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            console.log(width, height)
+            sceneContainerRef.current.appendChild(renderer.domElement);
+            const controls = new TrackballControls(camera, renderer.domElement);
+            controls.noZoom = true;
+            controls.noPan = true;
+            return { scene, camera, controls, renderer };
+        };
+    
+        // Add objects to the scene
+        const addObjects = (scene, coordinates) => {
+            const objs = [];
+            console.log('coordinates', coordinates);
+            coordinates.forEach(({name, x, y, z, rh}) => {
+                const geometry = new THREE.SphereGeometry( parseFloat(rh), parseFloat(rh), parseFloat(rh) );
+                const wireframe = new THREE.WireframeGeometry( geometry );
+                const line = new THREE.LineSegments( wireframe );
+                line.material.depthTest = false;
+                line.material.opacity = 1;
+                line.material.transparent = false;
+                const colorValue = getComputedStyle(document.documentElement).getPropertyValue('--foreground');
+                const color = new THREE.Color(colorValue.trim());
+                line.material.color = color;
+                line.position.set(parseFloat(x), parseFloat(y), parseFloat(z));
+                scene.add(line);
+                objs.push(line);
+            })
+            return objs;
+        };
+    
+            // Add points to the scene
+        const addPoints = (scene, coordinates) => {
+            const vertices = [];
+            const sizes = [];
+            coordinates.forEach(({name, x, y, z, rh}) => {
+                if (!isNaN(x) & !isNaN(y) & !isNaN(z) & !isNaN(rh)){
+                    vertices.push(parseFloat(x), parseFloat(y), parseFloat(z));
+                    sizes.push(2.*parseFloat(rh));
+                }
+            });
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+            geometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(sizes), 1));
+            const colorValue = getComputedStyle(document.documentElement).getPropertyValue('--foreground');
+            const color = new THREE.Color(colorValue.trim());
+
+            // Create the shader material
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    pointColor: { value: new THREE.Vector3(color.r, color.g, color.b) }
+                },
+                vertexShader: `
+                    attribute float size;
+                    varying float vSize;
+                
+                    void main() {
+                        vSize = size;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size; // Set the size of each point
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 pointColor;
+                    varying float vSize;
+                    
+                    void main() {
+                        vec2 fromCenter = abs(gl_PointCoord - vec2(0.5));
+                        float dist = 2.*length(fromCenter);
+                        gl_FragColor = vec4(pointColor, 1. - dist);
+                    }
+                `,
+                transparent: true, 
+                blending: THREE.AdditiveBlending,
+                depthTest: false
+            });
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+            return points;
+        };
+
+        // Animate the scene
+        const animateScene = (scene, renderer, camera, controls) => {
+          const animate = () => {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+                controls.update();
+            };
+          animate();
+        };
+    
+        // Handle window resize event
+        const handleResize = (renderer, camera) => {
+            const width = window.innerWidth - 20; //for scroll bar
+            const height = window.innerHeight - top0;
+            setSceneContainerStyle({width: width, height: height});
+            camera.aspect = width/height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        };
+
+
+
+        // Resize event listener
+        window.addEventListener('resize', () => handleResize(renderer, camera));
+        
+        // Clean up the scene
+        const cleanupScene = (renderer) => {
+            return () => {
+                sceneContainerRef.current.removeChild(renderer.domElement);
+                window.removeEventListener('resize', handleResize);
+
+            };
+        };
+    
+        const { scene, camera, controls, renderer } = setupScene();
+
+        // Fetch and parse the CSV file
+        fetch('data/OCdata_forUnity.csv')
+            .then((response) => response.text())
+            .then((data) => {
+                const coordinates = [];
+                const lines = data.trim().split('\n');
+                const headers = lines[0].split(',');
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',');
+                    const coordinate = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        coordinate[headers[j]] = values[j];
+                    }
+                    coordinates.push(coordinate);
+                }
+                // const objects = addObjects(scene, coordinates);
+                const points = addPoints(scene, coordinates);
+                animateScene(scene, renderer, camera, controls);
+        });
+
+        // Clean up the scene when the component is unmounted
+        return cleanupScene(renderer);
+      }, []);
+
     const imgh = windowHeight - top0;
     const imgw = windowWidth - 20; // 20 for the scrollbar (probably a better way to achieve this!)
     const eh = 100;
     const etop = windowHeight - eh;
-    const imgurl = "/images/OC_Gaia_background_v1.png"; // make a better image, maybe from my pleiades movie?
     return(
         <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
-            <div className = "fullWidthImage" style={{ backgroundImage: `url(${imgurl})` }}>
-            </div>
-            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw, height:eh, backgroundColor:'rgba(0,0,0,0.7)' }}>
+            <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
+            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw, height:eh}}>
                 <div className = "subheader lightColor">[Explanation of the analysis]</div>
                 <div className = "lightColor" style = {{ marginTop: '10px' }}>[Some text about analysis and BASE-9]</div>
             </div>
@@ -127,8 +283,8 @@ function Credit({ contributors, papers }){
                 <div className = "headerSmall darkColor">Credit</div>
                 <div className = "subheader darkColor" style = {{margin:'20px 0px 20px 0px'}}>Contributors</div>
                 
-                {contributors.map((d) => (
-                    <Contributor {...d}/>
+                {contributors.map((d, i) => (
+                    <Contributor key = {i} {...d}/>
                 ))}
                
                 <hr/>
