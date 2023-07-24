@@ -127,9 +127,12 @@ html,body{
     box-sizing: border-box;
 }
 .explorerTopBar{
+    position:absolute;
     left:0px;
     top:0px; 
     height:40px;
+    width:100%;
+    z-index:1;
     background-color: var(--dark);
     display: flex;
     justify-content: space-between;
@@ -151,7 +154,38 @@ html,body{
     text-align:left;
     padding-left:10px;
 }
-
+.explorerSettings{
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+    background-color:var(--light);
+    display:block;
+    z-index:1;
+}
+.explorerSettings .button{
+    position:absolute;
+    bottom:10px;
+    cursor:pointer;
+    background-color: var(--banner);
+    border: none;
+    color: var(--foreground);
+    padding: 10px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+}
+.explorerMain{
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+    background-color:white;
+    display:block;
+}
 .linkDiv{
 	cursor: pointer;
 	border-radius: 10px;
@@ -310,4 +344,11 @@ a:active {
 .canvas{
     width:100%;
     height:100%;
+}
+
+.hidden{
+    display: none;
+}
+.invisible{
+    visibility: hidden;
 }

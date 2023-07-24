@@ -82,6 +82,8 @@ export default function Explorer() {
         ]
     }
 
+
+
     const renderExplorerComponents = () => {
         const divs = [];
         for (let i = 0; i < globalState.explorerDivs.length; i++) {

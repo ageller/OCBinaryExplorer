@@ -153,7 +153,7 @@ function HeaderContent(){
         // Clean up the scene
         const cleanupScene = (renderer) => {
             return () => {
-                sceneContainerRef.current.removeChild(renderer.domElement);
+                if (sceneContainerRef.current) sceneContainerRef.current.removeChild(renderer.domElement);
                 window.removeEventListener('resize', handleResize);
 
             };
@@ -327,6 +327,7 @@ function Paper({ content }){
     )
 }
 
+
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
     const {globalState, setShowExplorerDivAtIndex} = useContext(GlobalStateContext);
@@ -343,6 +344,22 @@ function ExplorerContainer({label, count}){
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
 
+    // these will be updated with actual data from the database
+    let tableOptions = [
+        { label: 'Option 1', value: 'option1' },
+        { label: 'Option 2', value: 'option2' },
+        { label: 'Option 3', value: 'option3' },
+      ];
+      let xAxisOptions = [
+        { label: 'col a', value: 'cola' },
+        { label: 'col b', value: 'colb' },
+        { label: 'col c', value: 'colc' },
+      ];
+      let yAxisOptions = [
+        { label: 'col 1', value: 'col1' },
+        { label: 'col 2', value: 'col2' },
+        { label: 'col 3', value: 'col3' },
+      ];
     const getMaxZValue = () => {
         // get the maximum z-index for all the divs so that I can place the next one on top
         var z = 1;
@@ -400,11 +417,61 @@ function ExplorerContainer({label, count}){
         setShowExplorerDivAtIndex(index, false);
     };
 
-    const handleSettings = () => {
-        // to do
-        console.log('settings');
+    const toggleSettings = () => {
+        divRef.current.querySelector('.explorerSettings').classList.toggle("hidden");
+
     };
 
+    const renderDropdown = (options) => {
+        return (
+          <select>
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        );
+      };
+
+    const explorerSettings = () => {
+        return (
+            <div style={{ padding: '40px 10px' }}>
+                <p style={{ fontSize: '20px' }}>
+                    <i>Settings</i>
+                </p>
+                {label === 'table' && (
+                    <div>
+                        Please select the data table <br/>
+                        {renderDropdown(tableOptions)}
+                    </div>
+                )}
+                {label === 'histogram' && (
+                    <div>
+                        Please select the data table <br/>
+                        {renderDropdown(tableOptions)}
+                        <br/><br/>
+                        Please select the column to plot <br/>
+                        {renderDropdown(xAxisOptions)}
+                    </div>
+                )}
+                {label === 'scatter' && (
+                    <div>
+                        Please select the data table <br/>
+                        {renderDropdown(tableOptions)}
+                        <br/><br/>
+                        Please select the column for the x-axis <br/>
+                        {renderDropdown(xAxisOptions)}
+                        <br/><br/>
+                        Please select the column for the y-axis <br/>
+                        {renderDropdown(yAxisOptions)}
+                    </div>
+                )}
+                <br/><br/>
+                <div className = "button linkDiv" onClick={toggleSettings}>Done</div>
+            </div>
+          );
+    }
 
     return(
         <div 
@@ -413,6 +480,10 @@ function ExplorerContainer({label, count}){
             style = {{ ...pos, position: "absolute", zIndex: zIndex}}
             onClick = {handleClick}
         >
+            <div className = "explorerSettings">
+                {explorerSettings()}
+            </div>
+            <div className = "explorerMain"></div>
             <div className = "explorerTopBar grabbable" 
                 draggable = {true}    
                 onDragStart = {handleDragStart}
@@ -421,10 +492,11 @@ function ExplorerContainer({label, count}){
             >
                 <span className = "label">{label}</span>
                 <div className = "explorerTopBarIcons">
-                    <span className = "material-symbols-outlined icon"onClick = {handleSettings}>settings</span>
+                    <span className = "material-symbols-outlined icon"onClick = {toggleSettings}>settings</span>
                     <span className = "material-symbols-outlined icon" onClick = {handleClose}>close</span>
                 </div>
             </div>
+
 
         </div>
     )
