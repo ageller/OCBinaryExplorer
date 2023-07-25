@@ -1,10 +1,10 @@
 // index.html
 import { useState } from 'react';
 import Head from 'next/head';
-import {HeaderTop, HeaderContent, ExplorerEntry, Credit, Footer, Contributor, Paper} from './components'
+import {HeaderTop, ExplorerEntry, Credit, Footer, Contributor, Paper} from './components'
 
 // my scripts
-import addScrollAnimator from '../hooks/scrollAnimator';
+//import addScrollAnimator from '../hooks/scrollAnimator';
 
 
 export default function HomePage() {
@@ -16,7 +16,7 @@ export default function HomePage() {
     //     setLikes(likes + 1);
     // }
 
-    addScrollAnimator();
+    //addScrollAnimator();
 
     let headerProps = {
         title:"Open Cluster Binary Explorer",
@@ -63,7 +63,6 @@ export default function HomePage() {
                 <title>OC Binary Explorer</title>
             </Head>
             <HeaderTop {...headerProps} />
-            <HeaderContent />
             <ExplorerEntry />
             <Credit {...creditProps}/>
             <Footer />
@@ -71,4 +70,3 @@ export default function HomePage() {
         </>
     );
 }
-export { HeaderTop }

@@ -102,7 +102,6 @@ export default function Explorer() {
                 <SideBar {...sideBarProps} />
                 <h1>Hello World</h1>
                 <TestServer />
-                <Link href = "/">Back to home</Link>
                 {renderExplorerComponents()}
             </div>
         </>

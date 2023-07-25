@@ -23,6 +23,7 @@ html,body{
 	font-size: 16px;
 	color: var(--dark);
     scroll-snap-type: y proximity;
+    /* scroll-snap-type: y mandatory; */
     height:100%;
 }
 
@@ -34,6 +35,8 @@ html,body{
 	background-color: var(--banner);
     z-index:10;
     scroll-snap-align: start;
+    display:flex;
+    flex-direction: column;
 }
 .topNav .content {
 	padding: 10px;
@@ -198,7 +201,7 @@ html,body{
 	transform: scale(1.01, 1.01);
 }
 
-.bannerBackground{
+.bannerBackgroundColor{
 	background-color: var(--banner) !important;
 }
 .foregroundBackgroundColor{
@@ -212,6 +215,9 @@ html,body{
 }
 .foregroundColor{
 	color:  var(--foreground) !important;
+}
+.bannerColor{
+	color:  var(--banner) !important;
 }
 .darkColor{
 	color:  var(--dark) !important;

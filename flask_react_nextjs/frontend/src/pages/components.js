@@ -1,4 +1,4 @@
-import { useState, useContext, useRef, useEffect } from 'react';
+import { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GlobalStateContext } from '../context/globalState';
@@ -7,12 +7,14 @@ import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import csv from 'csv-parser';
 
-function HeaderTop({ title, subtitle, subsubtitle }) {
+
+function HeaderTop({ title, subtitle, subsubtitle}) {
+
     return (
         <div className = "topNav">
             {(title || subtitle) &&
                 <div className = "content">
-                    {title &&<div className = "header">{title}</div>}
+                    {title && <div className = "header">{title}</div>}
                     {subtitle && <div className = "subheader">{subtitle }</div>}
                 </div>
             }
@@ -23,7 +25,7 @@ function HeaderTop({ title, subtitle, subsubtitle }) {
 
 }
 
-function HeaderContent(){
+function ExplorerEntry(){
     // include an animation (or better image) that will play when the page loads(TO DO)
     const [windowHeight, setWindowHeight] = useState(0);
     const [windowWidth, setWindowWidth] = useState(0);
@@ -31,21 +33,19 @@ function HeaderContent(){
     const [sceneContainerStyle, setSceneContainerStyle] = useState({width:"100%", height: '500px'});
     const sceneContainerRef = useRef(null);
 
-    useEffect(() => {
-        // get the size of the container
-
-        setTop0(document.querySelector('.topNav').getBoundingClientRect().height);
-
-        // Function to handle window resize event
+    // Function to handle window resize event
+    useLayoutEffect(() => {
         const handleResize = () => {
             setWindowHeight(window.innerHeight);
             setWindowWidth(window.innerWidth);
-        };
-    
-        // Set initial window height
-        setWindowHeight(window.innerHeight);
-        setWindowWidth(window.innerWidth);
-    
+            const topNavElement = document.querySelector('.topNav');
+            if (topNavElement){
+                setTop0(topNavElement.getBoundingClientRect().height);
+            }
+        }
+
+        handleResize();
+
         // Add event listener for window resize
         window.addEventListener('resize', handleResize);
     
@@ -55,7 +55,7 @@ function HeaderContent(){
         };
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // Set up the Three.js scene
         // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
         const setupScene = () => {
@@ -134,9 +134,10 @@ function HeaderContent(){
             };
           animate();
         };
-    
+
+
         // Handle window resize event
-        const handleResize = (renderer, camera) => {
+        const handleResizeWebGL = (renderer, camera) => {
             const width = window.innerWidth - 20; //for scroll bar
             const height = window.innerHeight - top0;
             setSceneContainerStyle({width: width, height: height});
@@ -146,15 +147,14 @@ function HeaderContent(){
         };
 
 
-
         // Resize event listener
-        window.addEventListener('resize', () => handleResize(renderer, camera));
+        window.addEventListener('resize', () => handleResizeWebGL(renderer, camera));
         
         // Clean up the scene
         const cleanupScene = (renderer) => {
             return () => {
                 if (sceneContainerRef.current) sceneContainerRef.current.removeChild(renderer.domElement);
-                window.removeEventListener('resize', handleResize);
+                window.removeEventListener('resize', handleResizeWebGL);
 
             };
         };
@@ -183,18 +183,16 @@ function HeaderContent(){
 
         // Clean up the scene when the component is unmounted
         return cleanupScene(renderer);
-      }, []);
+      }, [windowHeight, top0]);
 
-    const imgh = windowHeight - top0;
     const imgw = windowWidth - 20; // 20 for the scrollbar (probably a better way to achieve this!)
-    const eh = 100;
-    const etop = windowHeight - eh;
     return(
         <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
             <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
-            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw, height:eh}}>
+            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw}}>
                 <div className = "subheader lightColor">[Explanation of the analysis]</div>
-                <div className = "lightColor" style = {{ marginTop: '10px' }}>[Some text about analysis and BASE-9]</div>
+                <div className = "lightColor" style = {{ margin: '10px 0px' }}>[Some text about analysis and BASE-9]</div>
+                <ExplorerEntryButton />
             </div>
         </div> 
 
@@ -202,7 +200,22 @@ function HeaderContent(){
     )
 }
 
-function ExplorerEntry({content}){
+function ExplorerEntryButton(){
+    return(
+        <Link href = "explorer">
+            <div className = "foregroundBackgroundColor linkDiv">
+                <div className = "content">
+                    <div className = "headerSmall bannerColor">Click here to enter the <i>Interactive Data Explorer</i> </div>
+                    <div className = "subheader darkColor" >View, filter, sort, create, edit, and download data and plots</div>
+
+                </div>
+            </div>
+        </Link>
+    )
+}
+
+function ExplorerEntryLarge({content}){
+    // currently unused
     // include some image
     // something about "click here to enter"
     const [windowHeight, setWindowHeight] = useState(0);
@@ -236,7 +249,7 @@ function ExplorerEntry({content}){
                 <div className = "animateScrollWrapper">
                     <div className = "animateScroll scrollTransition">
                         <Link href = "explorer">
-                            <div className = "inset bannerBackground linkDiv" style = {{height: windowHeight - divHeight}}>
+                            <div className = "inset bannerBackgroundColor linkDiv" style = {{height: windowHeight - divHeight}}>
                                 <div className = "content">
                                     <div className = "headerSmall">Tables and Plots</div>
                                     <div className = "subheader">View, filter, sort, create, edit, and download data and plots</div>
@@ -502,7 +515,7 @@ function ExplorerContainer({label, count}){
     )
 }
 
-function SideBarButton({label, icon}){
+function SideBarButton({label, icon, style}){
     const {globalState, appendExplorerDiv} = useContext(GlobalStateContext);
 
     const handleButtonClick = () => {
@@ -513,10 +526,21 @@ function SideBarButton({label, icon}){
 
 
     return( 
-        <div key = {label} className = "button linkDiv" onClick = {handleButtonClick}>
+        <div key = {label} className = "button linkDiv" onClick = {handleButtonClick} style = {style}>
             <div className = "material-symbols-outlined icon">{icon}</div>
             <div className = "label">{label}</div>
         </div>
+    )
+}
+function SideBarHomeButton({label, icon, style}){
+
+    return( 
+        <Link href = "/">
+            <div key = {label} className = "button linkDiv"  style = {style}>
+                <div className = "material-symbols-outlined icon">{icon}</div>
+                <div className = "label">{label}</div>
+            </div>
+        </Link>
     )
 }
 
@@ -527,6 +551,8 @@ function SideBar({buttons}){
             {buttons.map((data, index) => (
                 <SideBarButton key = {index} {...data}/>
             ))}
+            <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px"}}/>
+
         </div>
     )
 }
@@ -536,5 +562,5 @@ function SideBar({buttons}){
 // https://stackoverflow.com/questions/33840150/onclick-doesnt-render-new-react-component
 
 
-export {HeaderTop, HeaderContent, ExplorerEntry, Credit, Footer, Contributor, Paper, SideBar, ExplorerContainer}
+export {HeaderTop, ExplorerEntry, Credit, Footer, Contributor, Paper, SideBar, ExplorerContainer}
 
