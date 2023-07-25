@@ -1,59 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import Link from 'next/link';
 import Head from 'next/head';
 import {HeaderTop, SideBar, ExplorerContainer } from './components'
 import { GlobalStateContext } from '../context/globalState';
 
-// this is a simple test to see how I can grab data from the server
-// eventually I can build this out into grabbing read data and then plotting results
-function TestServer({}) {
-    // usestate for setting a javascript
-    // object for storing and using data
-    const [data, setData] = useState({
-        name: "",
-        age: 0,
-        date: "",
-        programming: "",
-    });
-    const [loading, setLoading] = useState(true);
-
-    // Using useEffect for single rendering
-    useEffect(() => {
-        // Using fetch to fetch the api from 
-        // flask server it will be redirected to proxy
-        fetch("/api/data")
-            .then(res => res.json())
-            .then(data => {
-                // Setting a data from api
-                setData({
-                    name: data.Name,
-                    age: data.Age,
-                    date: data.Date,
-                    programming: data.programming,
-                });
-                setLoading(false);
-            })
-    }, []);
-  
-    return (
-        (loading) ?
-            (
-                <div>
-                    <p>Loading...</p>
-                </div>
-            ) : (
-                <div >
-                    <h2>(React+next.js) + flask test <br/> will be replaced with instructions on how to use</h2>
-                    {/* Calling a data from setdata for showing */}
-                    <p>{data.name}</p>
-                    <p>{data.age}</p>
-                    <p>{data.date}</p>
-                    <p>{data.programming}</p>
-                </div>
-            )
-    );
-  
-}
 
 
 export default function Explorer() {
@@ -100,8 +49,7 @@ export default function Explorer() {
             <HeaderTop {...headerProps} />
             <div className = "explorerContent">
                 <SideBar {...sideBarProps} />
-                <h1>Hello World</h1>
-                <TestServer />
+                <div className = "explorerInstructions">Please use the buttons on the left to create containers for tables, histograms and scatter plots.  <br/><br/>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.<br/><br/>  You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</div>
                 {renderExplorerComponents()}
             </div>
         </>

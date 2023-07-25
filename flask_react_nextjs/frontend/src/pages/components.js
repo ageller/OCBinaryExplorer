@@ -357,22 +357,19 @@ function ExplorerContainer({label, count}){
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
 
-    // these will be updated with actual data from the database
-    let tableOptions = [
-        { label: 'Option 1', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-      ];
-      let xAxisOptions = [
-        { label: 'col a', value: 'cola' },
-        { label: 'col b', value: 'colb' },
-        { label: 'col c', value: 'colc' },
-      ];
-      let yAxisOptions = [
-        { label: 'col 1', value: 'col1' },
-        { label: 'col 2', value: 'col2' },
-        { label: 'col 3', value: 'col3' },
-      ];
+    const [plotData, setPlotData] = useState({
+        cluster: "",
+        table: "",
+        x_column: "",
+        x2_column: "",
+        y_column: "",
+    });
+    const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
+    const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
+    const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
+
+    ///////////////////
+    // functions to set the div position
     const getMaxZValue = () => {
         // get the maximum z-index for all the divs so that I can place the next one on top
         var z = 1;
@@ -430,14 +427,101 @@ function ExplorerContainer({label, count}){
         setShowExplorerDivAtIndex(index, false);
     };
 
+    ////////////////////////////
+    // database queries
+
+    useEffect(() => {
+        // get the clusters (this could be done once for the entire )
+        fetch("/api/getAvailableClusters")
+            .then(res => res.json())
+            .then(data => {
+                let options = [];
+                data.clusters.forEach(d => {
+                    options.push({label: d.replace('_',' '), value: d})
+                });
+                setAvailableClusters({
+                    clusters: data.clusters,
+                    options: options
+                });
+            })
+    }, []);
+
+    useEffect(() => {
+        // when the cluster changes
+        // - set the cluster on the backend
+        // - get the available tables for that cluster
+
+        fetch('/api/setCluster', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                let options = [];
+                data.tables.forEach(d => {
+                    options.push({label: d.replace('_',' '), value: d})
+                });               
+                setAvailableTables({
+                    tables: data.tables,
+                    options: options
+                });
+            })
+            .catch(error => {
+                console.error('Error sending cluster data:', error);
+            });
+
+    }, [plotData.cluster]);
+
+    useEffect(() => {
+        // when the table changes
+        // - get the available columns for that table
+
+        fetch('/api/setTable', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                let options = [];
+                data.columns.forEach(d => {
+                    options.push({label: d, value: d})
+                });               
+                setAvailableColumns({
+                    columns: data.columns,
+                    options: options
+                });
+            })
+            .catch(error => {
+                console.error('Error sending table data:', error);
+            });
+
+    }, [plotData.table]);
+
+    ////////////////////////////
+    // function controlling the settings
     const toggleSettings = () => {
         divRef.current.querySelector('.explorerSettings').classList.toggle("hidden");
 
     };
 
-    const renderDropdown = (options) => {
+    const renderDropdown = (options, dataKey) => {
+        const handleDropdownChange = (event) => {
+            const selectedValue = event.target.value;
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: selectedValue,
+            }));
+        };
+        
         return (
-          <select>
+          <select value = {plotData[dataKey]} onChange={handleDropdownChange}>
+            <option value="" disabled>Please select</option>
             {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -455,29 +539,44 @@ function ExplorerContainer({label, count}){
                 </p>
                 {label === 'table' && (
                     <div>
-                        Please select the data table <br/>
-                        {renderDropdown(tableOptions)}
+                        1. Select the cluster <br/>
+                        {renderDropdown(availableClusters.options, 'cluster')}
+                        <br/><br/>
+                        2. Select the data table <br/>
+                        {renderDropdown(availableTables.options, 'table')}
                     </div>
                 )}
                 {label === 'histogram' && (
                     <div>
-                        Please select the data table <br/>
-                        {renderDropdown(tableOptions)}
+                        1. Select the cluster <br/>
+                        {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
-                        Please select the column to plot <br/>
-                        {renderDropdown(xAxisOptions)}
+                        2. Select the data table <br/>
+                        {renderDropdown(availableTables.options, 'table')}
+                        <br/><br/>
+                        3. Select the column to plot <br/>
+                        {renderDropdown(availableColumns.options, 'x_column')}
+                        <br/><br/>
+                        3a. (Optional) Select a column to subtract from the previous column (e.g., for a color) <br/>
+                        {renderDropdown(availableColumns.options, 'x2_column')}
                     </div>
                 )}
                 {label === 'scatter' && (
                     <div>
-                        Please select the data table <br/>
-                        {renderDropdown(tableOptions)}
+                        1. Select the cluster <br/>
+                        {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
-                        Please select the column for the x-axis <br/>
-                        {renderDropdown(xAxisOptions)}
+                        2. Select the data table <br/>
+                        {renderDropdown(availableTables.options, 'table')}
                         <br/><br/>
-                        Please select the column for the y-axis <br/>
-                        {renderDropdown(yAxisOptions)}
+                        3. Select the column for the x-axis <br/>
+                        {renderDropdown(availableColumns.options, 'x_column')}
+                        <br/><br/>
+                        3a. (Optional) Select a column to subtract from the previous column (e.g., for a color) <br/>
+                        {renderDropdown(availableColumns.options, 'x2_column')}
+                        <br/><br/>
+                        4. Select the column for the y-axis <br/>
+                        {renderDropdown(availableColumns.options, 'y_column')}
                     </div>
                 )}
                 <br/><br/>
