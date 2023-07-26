@@ -5,7 +5,6 @@ import { GlobalStateContext } from '../context/globalState';
 
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
-import csv from 'csv-parser';
 
 
 function HeaderTop({ title, subtitle, subsubtitle}) {
@@ -34,7 +33,7 @@ function ExplorerEntry(){
     const sceneContainerRef = useRef(null);
 
     // Function to handle window resize event
-    useLayoutEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             setWindowHeight(window.innerHeight);
             setWindowWidth(window.innerWidth);
@@ -55,7 +54,7 @@ function ExplorerEntry(){
         };
     }, []);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // Set up the Three.js scene
         // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
         const setupScene = () => {
@@ -185,11 +184,10 @@ function ExplorerEntry(){
         return cleanupScene(renderer);
       }, [windowHeight, top0]);
 
-    const imgw = windowWidth - 20; // 20 for the scrollbar (probably a better way to achieve this!)
     return(
         <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
             <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
-            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0, width: imgw}}>
+            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0}}>
                 <div className = "subheader lightColor">[Explanation of the analysis]</div>
                 <div className = "lightColor" style = {{ margin: '10px 0px' }}>[Some text about analysis and BASE-9]</div>
                 <ExplorerEntryButton />
@@ -203,7 +201,7 @@ function ExplorerEntry(){
 function ExplorerEntryButton(){
     return(
         <Link href = "explorer">
-            <div className = "foregroundBackgroundColor linkDiv">
+            <div className = "foregroundBackgroundColor linkDiv" style={{marginLeft:'16px'}}>
                 <div className = "content">
                     <div className = "headerSmall bannerColor">Click here to enter the <i>Interactive Data Explorer</i> </div>
                     <div className = "subheader darkColor" >View, filter, sort, create, edit, and download data and plots</div>
@@ -265,57 +263,17 @@ function ExplorerEntryLarge({content}){
 
 }
 
-function Credit({ contributors, papers }){
 
-    return(
 
-        <div className = "division lightColor" id = "creditDiv">
-            <div className = "content" style = {{minHeight:'700px', width:'100%"'}}>
-                <div className = "headerSmall darkColor">Credit</div>
-                <div className = "subheader darkColor" style = {{margin:'20px 0px 20px 0px'}}>Contributors</div>
-                
-                {contributors.map((d, i) => (
-                    <Contributor key = {i} {...d}/>
-                ))}
-               
-                <hr/>
-                <div style = {{height:"50px"}}></div>
-                <div className = "subheader darkColor">Papers</div>
 
-                {papers.map((d) => (
-                    <Paper {...d}/>
-                ))}
-
-            </div>
-        </div>
-    )
-
-}
-
-function Footer(){
-    return(
-        <div className = "division footer">
-            <div className = "content" style = {{fontSize: "calc(10px + 0.5vw)"}}>
-                <strong><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></strong><br/>
-                <a href = "https://ciera.northwestern.edu/" target = "_blank">Northwestern University - CIERA</a><br/>				
-                1800 Sherman Ave., Evanston, IL 60201, USA<br/>
-                Office: 8019 (8th Floor)<br/>
-                Phone: (847) 467-6233   |   Fax: (847) 467-0679<br/>
-                Email: a-geller [at] northwestern.edu<br/>
-            </div>
-        </div>
-    )
-}
-
-function Contributor({ name, link, image, title, affiliation }){
-
+function ContributorPhoto({ index, name, link, image, title, affiliation, type }){
+    // why do I need this -3px to avoid the white space (where is the white space coming from??)
     return( 
-        <div className = "pageSideBySide">
-            <hr/>
-            <div className = "smallerChild" style = {{paddingRight:'20px'}}>
+        <div className="pageSideBySide" style={{ borderBottom: '1px solid gray', ...(index === 0 ? { borderTop: '1px solid gray' } : {marginTop: '-3px'}) }}>
+            <div className = "smallerChild" style = {{padding:'10px'}}>
                 <div className = "insetLeft">
                     <a href = {link}>
-                        <Image className = "profileImage" src = {image} height = {200} width = {200} alt = {name}/>
+                        <Image className = "profileImage" src = {image} height = {150} width = {150} alt = {name}/>
                         </a>
                 </div>
             </div>
@@ -331,15 +289,69 @@ function Contributor({ name, link, image, title, affiliation }){
         </div>
     )
 }
+function ContributorUndergrad({ index, name, link, image, title, affiliation, type }){
+    // why do I need this -3px to avoid the white space (where is the white space coming from??)
+    return( 
+        <div className="pageSideBySide" >
+            <div style = {{padding:'10px'}}>
+                <strong>{name}</strong>, {title}, {affiliation}
+            </div>
+        </div>
+    )
+}
+function Team({ contributors }){
+
+    return(
+        <>
+            <div className = "headerSmall darkColor">Meet the Team</div>
+            {contributors.map((d, i) => (
+                d.type === 'undergrad' ? (
+                    <ContributorUndergrad key = {i} index={i} {...d}/>
+                ) : (
+                    <ContributorPhoto key = {i} index={i} {...d}/>
+
+                )
+            ))}
+        </>
+
+    )
+}
+
 
 function Paper({ content }){
 
     return( 
-        <div>
+        <div className = "paperContent">
         </div>
     )
 }
+function Papers({ papers }){
 
+    return(
+        <>
+            <div className = "headerSmall darkColor">Papers</div>
+            {papers.map((d, i) => (
+                <Paper key = {i} {...d}/>
+            ))}
+        </>
+    )
+}
+function Footer(){
+    return(
+        <div className = "division footer">
+            <div className = "content" style = {{fontSize: "calc(10px + 0.5vw)"}}>
+                This material is based upon work supported by the National Science Foundation under AAG Grant No. 2107738.  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+                <div style={{height:'20px'}}></div>
+                <strong><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></strong><br/>
+                <a href = "https://ciera.northwestern.edu/" target = "_blank">Northwestern University - CIERA</a><br/>				
+                1800 Sherman Ave., Evanston, IL 60201, USA<br/>
+                Office: 8019 (8th Floor)<br/>
+                Phone: (847) 467-6233   |   Fax: (847) 467-0679<br/>
+                Email: a-geller [at] northwestern.edu<br/>
+            </div>
+        </div>
+    )
+}
 
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
@@ -367,6 +379,7 @@ function ExplorerContainer({label, count}){
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
     const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
+    const [plotlyLoaded, setPlotlyLoaded] = useState(false);
 
     ///////////////////
     // functions to set the div position
@@ -437,7 +450,7 @@ function ExplorerContainer({label, count}){
             .then(data => {
                 let options = [];
                 data.clusters.forEach(d => {
-                    options.push({label: d.replace('_',' '), value: d})
+                    options.push({label: d.replaceAll('_',' '), value: d})
                 });
                 setAvailableClusters({
                     clusters: data.clusters,
@@ -462,7 +475,7 @@ function ExplorerContainer({label, count}){
             .then(data => {
                 let options = [];
                 data.tables.forEach(d => {
-                    options.push({label: d.replace('_',' '), value: d})
+                    options.push({label: d.replaceAll('_',' '), value: d})
                 });               
                 setAvailableTables({
                     tables: data.tables,
@@ -585,6 +598,29 @@ function ExplorerContainer({label, count}){
           );
     }
 
+    ////////////////////////////
+    // function controlling the plots
+    // useEffect(() => {
+    //     // load the plotly library (needs to be loaded this way or else we get errors related to self)
+    //     import('react-plotly.js').then(() => {
+    //         setPlotlyLoaded(true);
+    //     });
+    // }, []);
+
+    // const createPlot = () => {
+    //     const data = [{
+    //         x: [1, 2, 3, 4, 5],
+    //         y: [10, 11, 12, 13, 14],
+    //         type: 'scatter',
+    //         mode: 'lines+markers',
+    //         marker: { color: 'red' },
+    //     },];
+    
+    //   const layout = { title: 'My Plot' };
+    
+    //   return plotlyLoaded ? <Plot data={data} layout={layout} /> : null;
+    // };
+
     return(
         <div 
             ref = {divRef}
@@ -595,7 +631,9 @@ function ExplorerContainer({label, count}){
             <div className = "explorerSettings">
                 {explorerSettings()}
             </div>
-            <div className = "explorerMain"></div>
+            <div className = "explorerMain">
+                {/* {createPlot()} */}
+            </div>
             <div className = "explorerTopBar grabbable" 
                 draggable = {true}    
                 onDragStart = {handleDragStart}
@@ -661,5 +699,5 @@ function SideBar({buttons}){
 // https://stackoverflow.com/questions/33840150/onclick-doesnt-render-new-react-component
 
 
-export {HeaderTop, ExplorerEntry, Credit, Footer, Contributor, Paper, SideBar, ExplorerContainer}
+export {HeaderTop, ExplorerEntry, Team, Papers, Footer, SideBar, ExplorerContainer}
 

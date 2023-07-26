@@ -49,7 +49,7 @@ export default function Explorer() {
             <HeaderTop {...headerProps} />
             <div className = "explorerContent">
                 <SideBar {...sideBarProps} />
-                <div className = "explorerInstructions">Please use the buttons on the left to create containers for tables, histograms and scatter plots.  <br/><br/>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.<br/><br/>  You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</div>
+                <div className = "explorerInstructions">Please use the buttons on the left to create containers for tables, histograms and scatter plots.  <br/><br/>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.<br/><br/>  You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.<br/><br/>MORE INFORMATION COMING LATER ON WHAT EACH DATABASE TABLE CONTAINS.</div>
                 {renderExplorerComponents()}
             </div>
         </>

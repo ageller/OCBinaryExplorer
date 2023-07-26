@@ -22,19 +22,21 @@ html,body{
 	font-family: 'Ubuntu', sans-serif;
 	font-size: 16px;
 	color: var(--dark);
-    scroll-snap-type: y proximity;
+    /* scroll-snap-type: y proximity; */
     /* scroll-snap-type: y mandatory; */
     height:100%;
 }
 
 /* page divs */
 .topNav {
+	/* position: fixed;
+	width: calc(100% - 17px); */ /*17px is the approximate width of the scrollbar */
 	position: relative;
 	width: 100%;
 	/*min-height: 200px;*/
 	background-color: var(--banner);
     z-index:10;
-    scroll-snap-align: start;
+    /* scroll-snap-align: start; */
     display:flex;
     flex-direction: column;
 }
@@ -54,11 +56,13 @@ html,body{
 	width: 50%;
 	min-width:200px; 
 	float: left;
+    padding:10px;
 }
 .pageSideBySide .smallerChild{
 	width:10%; 
 	min-width:200px; 
 	float: left;
+    padding:10px;
 }
 
 .pageSideBySide .child .insetLeft{
@@ -67,7 +71,10 @@ html,body{
 .pageSideBySide .child .insetRight{
 	margin: 5px 0px 5px 5px;
 }
-
+.paperContent{
+    background-color: var(--light);
+	color: var(--dark);
+}
 .pageInset{
     position: relative;
 	width: 100%;
@@ -89,6 +96,9 @@ html,body{
 	/*min-height: 100px;*/
 }
 
+#explainer{
+    width: calc(100% - 17px); /* 17px is the approximate width of the scrollbar */
+}
 .sideBar{
     position:absolute;
     left:0;
@@ -237,7 +247,6 @@ html,body{
 
 .profileImage{
 	cursor: pointer;
-	width:100%; 
 	border-radius:50%; 
 	box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 	/*shape-outside:circle(50%)*/
@@ -249,8 +258,8 @@ html,body{
 	transform: scale(1.01, 1.01);
 }
 .centerV{
-	line-height: 200px;
-	height: 200px;
+	/* line-height: 200px;
+	height: 200px; */
 /*	margin:  0;
 	position: absolute;
 	top: 50%;
@@ -348,10 +357,10 @@ a:active {
 }
 
 #explorerEntryDiv {
-    scroll-snap-align: start;
+    /* scroll-snap-align: start; */
 }
 #creditDiv {
-    scroll-snap-align: start;
+    /* scroll-snap-align: start; */
 }
 
 .canvas{

@@ -1,7 +1,7 @@
 // index.html
 import { useState } from 'react';
 import Head from 'next/head';
-import {HeaderTop, ExplorerEntry, Credit, Footer, Contributor, Paper} from './components'
+import {HeaderTop, ExplorerEntry, Team, Papers, Footer} from './components'
 
 // my scripts
 //import addScrollAnimator from '../hooks/scrollAnimator';
@@ -24,39 +24,45 @@ export default function HomePage() {
         subsubtitle:<>An NSF-funded research project from PI <a href="https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller.</a></>
     }
 
-    let creditProps = {
+    let teamProps = {
         contributors:[
             {
                 name: "Aaron Geller",
                 link: "https://faculty.wcas.northwestern.edu/aaron-geller/index.html",
                 image: "/images/AMG_photo_square.png",
                 title: "Research Assistant Professor, Project PI",
-                affiliation: "Northwestern Unversity - CIERA"
+                affiliation: "Northwestern Unversity - CIERA",
+                type: "faculty"
             },
             {
                 name: "Anna Childs",
-                link: "",
-                image: "/images/Smiley_Face.png",
+                link: "https://ciera.northwestern.edu/directory/anna-childs/",
+                image: "/images/Anna-Childs-265x265.jpg",
                 title: "Postdoctoral Associate",
-                affiliation: "Northwestern Unversity - CIERA"
+                affiliation: "Northwestern Unversity - CIERA",
+                type: "postdoc"
             },
             {
                 name: "Erin Motherway",
                 link: "",
-                image: "/images/Smiley_Face.png",
                 title: "Undergraduate Researcher",
-                affiliation: "Embry-Riddle Aeronautical University"
+                affiliation: "Embry-Riddle Aeronautical University",
+                type: "undergrad"
             },
             {
                 name: "Claire Zwicker",
                 link: "",
-                image: "/images/Smiley_Face.png",
                 title: "Undergraduate Researcher",
-                affiliation: "Illinois Institute of Technology"
+                affiliation: "Illinois Institute of Technology",
+                type: "undergrad"
             }
         ],
+    };
+
+    let paperProps = {
         papers:[]
-    }
+    };
+
     return (
         <>
             <Head>
@@ -64,9 +70,16 @@ export default function HomePage() {
             </Head>
             <HeaderTop {...headerProps} />
             <ExplorerEntry />
-            <Credit {...creditProps}/>
+            <div className = "division lightColor" id = "creditDiv">
+                <div className = "content" style = {{minHeight:'700px', width:'100%"'}}>
+                    <Team {...teamProps}/>
+                    <div style = {{height:"50px"}}></div>
+                    <Papers {...paperProps}/>
+                    <hr/>
+
+                </div>
+            </div>
             <Footer />
-            {/* <button onClick={handleClick}>Like ({likes})</button> */}
         </>
     );
 }
