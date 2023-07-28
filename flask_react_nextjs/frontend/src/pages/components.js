@@ -6,6 +6,9 @@ import { GlobalStateContext } from '../context/globalState';
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
+import dynamic from 'next/dynamic';
+const DynamicPlot = dynamic(() => import('react-plotly.js'), { ssr: false });
+
 
 function HeaderTop({ title, subtitle, subsubtitle}) {
 
@@ -189,7 +192,7 @@ function ExplorerEntry(){
             <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
             <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0}}>
                 <div className = "subheader lightColor">[Explanation of the analysis]</div>
-                <div className = "lightColor" style = {{ margin: '10px 0px' }}>[Some text about analysis and BASE-9]</div>
+                <div className = "lightColor" style = {{ margin: '10px 0px 10px 16px' }}>[Some text about analysis and BASE-9]</div>
                 <ExplorerEntryButton />
             </div>
         </div> 
@@ -340,8 +343,9 @@ function Footer(){
     return(
         <div className = "division footer">
             <div className = "content" style = {{fontSize: "calc(10px + 0.5vw)"}}>
-                This material is based upon work supported by the National Science Foundation under AAG Grant No. 2107738.  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+                This material is based upon work supported by the National Science Foundation under AAG Grant No. AST-2107738.  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
                 <div style={{height:'20px'}}></div>
+                For additional Information, please contact: <br/><br/>
                 <strong><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></strong><br/>
                 <a href = "https://ciera.northwestern.edu/" target = "_blank">Northwestern University - CIERA</a><br/>				
                 1800 Sherman Ave., Evanston, IL 60201, USA<br/>
@@ -351,6 +355,42 @@ function Footer(){
             </div>
         </div>
     )
+}
+
+function PlotlyFigure({data}){
+
+    var dataUse;
+    var layout = {
+        width: data.div_width,
+        height: data.div_height
+    };
+    if (data.type === "histogram"){
+        dataUse = [{
+            x: data.x,
+            type: data.type,
+        },];
+        layout.xaxis = {title: data.x2_column === "" ? data.x_column : data.x_column + "-" + data.x2_column};
+        layout.yaxis = {title: 'N'};
+    } else if (data.type === "scatter"){
+        dataUse = [{
+            x: data.x,
+            y: data.y,
+            type: data.type,
+            mode:data.mode,
+        },]; 
+        layout.xaxis =  {title: data.x2_column === "" ? data.x_column : data.x_column + "-" + data.x2_column};
+        layout.yaxis = {title: data.y_column};
+    }
+
+    const config = {};
+    
+    return dataUse[0].x.length > 0 ? (
+            <div style= {{marginTop: "40px"}}>
+                <DynamicPlot data={dataUse} layout={layout} config={config} /> 
+            </div>
+        )
+    : null;
+
 }
 
 function ExplorerContainer({label, count}){
@@ -375,11 +415,16 @@ function ExplorerContainer({label, count}){
         x_column: "",
         x2_column: "",
         y_column: "",
+        x:[],
+        y:[],
+        type:label,
+        mode:label === "scatter" ? "markers" : "",
+        div_height:0,
+        div_width:0,
     });
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
     const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
-    const [plotlyLoaded, setPlotlyLoaded] = useState(false);
 
     ///////////////////
     // functions to set the div position
@@ -516,6 +561,59 @@ function ExplorerContainer({label, count}){
 
     }, [plotData.table]);
 
+    useEffect(() => {
+        // when the x_column or x2_column changes
+        // - get the data from the table
+
+        fetch('/api/setXColumn', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    x: data.x_data,
+                }))
+            })
+            .catch(error => {
+                console.error('Error sending x column:', error);
+            });
+
+    }, [plotData.x_column, plotData.x2_column]);
+
+
+    useEffect(() => {
+        // when the y_column changes
+        // - get the data from the table
+
+        fetch('/api/setYColumn', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    y: data.y_data,
+                }))
+            })
+            .catch(error => {
+                console.error('Error sending y column:', error);
+            });
+
+    }, [plotData.y_column]);
+    
+    // resizing for the plot
+    // TO DO
+    
+        
     ////////////////////////////
     // function controlling the settings
     const toggleSettings = () => {
@@ -598,28 +696,6 @@ function ExplorerContainer({label, count}){
           );
     }
 
-    ////////////////////////////
-    // function controlling the plots
-    // useEffect(() => {
-    //     // load the plotly library (needs to be loaded this way or else we get errors related to self)
-    //     import('react-plotly.js').then(() => {
-    //         setPlotlyLoaded(true);
-    //     });
-    // }, []);
-
-    // const createPlot = () => {
-    //     const data = [{
-    //         x: [1, 2, 3, 4, 5],
-    //         y: [10, 11, 12, 13, 14],
-    //         type: 'scatter',
-    //         mode: 'lines+markers',
-    //         marker: { color: 'red' },
-    //     },];
-    
-    //   const layout = { title: 'My Plot' };
-    
-    //   return plotlyLoaded ? <Plot data={data} layout={layout} /> : null;
-    // };
 
     return(
         <div 
@@ -632,7 +708,7 @@ function ExplorerContainer({label, count}){
                 {explorerSettings()}
             </div>
             <div className = "explorerMain">
-                {/* {createPlot()} */}
+                <PlotlyFigure data={plotData} />
             </div>
             <div className = "explorerTopBar grabbable" 
                 draggable = {true}    

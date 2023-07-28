@@ -5,6 +5,7 @@ from flask_restful import Api, Resource
 
 import sqlite3
 import os
+import numpy as np
 
 # Initializing flask app
 app = Flask(__name__)
@@ -45,35 +46,20 @@ def get_available_columns(cursor, table_name):
     column_names = [row[1] for row in table_info]
     return column_names
 
+def get_column_data(cursor, table_name, column):
+    # select the data from the table
+    cursor.execute(f"SELECT {column} FROM {table_name}")
+    
+    # Fetch all the rows of that result
+    dd = cursor.fetchall()
+    
+    # return the data
+    data = [d[0] for d in dd]
+    return data
 
-# for the simple test below
-# import time
-import datetime
-x = datetime.datetime.now()
 
 
-# regular version
-# @app.route("/api/data")
-# def getData(): 
-#     return {
-#             'Name':"geek", 
-#             "Age":"22",
-#             "Date":x.strftime("%m/%d/%Y %H:%M:%S"),
-#             "programming":"python"
-#         }
-
-# RESTful version
-class getData(Resource):
-    def get(self):
-        # time.sleep(2) # to set the conditional that would say loading
-        return {
-                'Name':"geek", 
-                "Age":"22",
-                "Date":x.strftime("%m/%d/%Y %H:%M:%S"),
-                "programming":"python"
-            }
-api.add_resource(getData, '/api/data')
-
+# RESTful api below
 class getAvailableClusters(Resource):
     def get(self):
         clusters = get_available_clusters()
@@ -101,10 +87,42 @@ class setTable(Resource):
         if (data['cluster'] != ''):
             conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
             cursor = conn.cursor()
-            if (cursor):
+            if (cursor and data['table'] != ''):
                 columns = get_available_columns(cursor, data['table'])
         return {"columns": columns}, 200
 api.add_resource(setTable, '/api/setTable')
+
+class setXColumn(Resource):
+    # set the database and return the available tables
+    def post(self):
+        data = request.json
+        x1_data = []
+        x2_data = []
+        x_data = []
+        if (data['cluster'] != ''):
+            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+            cursor = conn.cursor()
+            if (cursor and data['table'] != '' and data['x_column'] != ''):
+                x1_data = get_column_data(cursor, data['table'], data['x_column'])
+                x_data = x1_data
+            if (cursor and data['table'] != '' and data['x2_column'] != ''):
+                x2_data = get_column_data(cursor, data['table'], data['x2_column'])
+                x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
+        return {"x_data": x_data}, 200
+api.add_resource(setXColumn, '/api/setXColumn')
+
+class setYColumn(Resource):
+    # set the database and return the available tables
+    def post(self):
+        data = request.json
+        y_data = []
+        if (data['cluster'] != ''):
+            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+            cursor = conn.cursor()
+            if (cursor and data['table'] != '' and data['y_column'] != ''):
+                y_data = get_column_data(cursor, data['table'], data['y_column'])
+        return {"y_data": y_data}, 200
+api.add_resource(setYColumn, '/api/setYColumn')
 
 # Running app
 if __name__ == '__main__':
