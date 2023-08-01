@@ -10,6 +10,8 @@
 	--dark:#292929;
 	--link:#FC6471;
 	--banner:#3066BE;
+    --lightInstructions:lightgrey;
+
 
 }
 
@@ -124,7 +126,7 @@ html,body{
     margin-top:-10px
 }
 .explorerContent{
-    margin-left:110px;
+    margin-left:100px;
 }
 .explorerContainer{
     position:absolute;
@@ -135,7 +137,7 @@ html,body{
     background-color:var(--light);
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     resize:both;
-    overflow:auto;
+    overflow:hidden;
     z-index:1;
     box-sizing: border-box;
 }
@@ -201,10 +203,11 @@ html,body{
 }
 .explorerInstructions{
     padding:10px;
-    color:lightgrey;
+    color:var(--lightInstructions);
     font-size:20px;
     line-height:26px;
     font-style:italic;
+    text-align: justify;
 }
 .linkDiv{
 	cursor: pointer;
@@ -320,6 +323,18 @@ a:active {
 	color: var(--dark);
 }
 
+.explorerInstructions a:link {
+    color:var(--lightInstructions);
+}
+.explorerInstructions a:visited {
+    color:var(--lightInstructions);
+}
+.explorerInstructions a:hover {
+    color:var(--lightInstructions);
+}
+.explorerInstructions a:active {
+    color:var(--lightInstructions);
+}
 
 /* animating on scroll */
 .animateScroll {

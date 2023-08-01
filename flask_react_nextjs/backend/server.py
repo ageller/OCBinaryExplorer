@@ -105,7 +105,7 @@ class setXColumn(Resource):
             if (cursor and data['table'] != '' and data['x_column'] != ''):
                 x1_data = get_column_data(cursor, data['table'], data['x_column'])
                 x_data = x1_data
-            if (cursor and data['table'] != '' and data['x2_column'] != ''):
+            if (cursor and data['table'] != '' and data['x2_column'] != '' and data['x2_column'] != 'None'):
                 x2_data = get_column_data(cursor, data['table'], data['x2_column'])
                 x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
         return {"x_data": x_data}, 200

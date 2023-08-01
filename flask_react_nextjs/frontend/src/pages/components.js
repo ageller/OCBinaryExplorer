@@ -342,56 +342,14 @@ function Papers({ papers }){
 function Footer(){
     return(
         <div className = "division footer">
-            <div className = "content" style = {{fontSize: "calc(10px + 0.5vw)"}}>
-                This material is based upon work supported by the National Science Foundation under AAG Grant No. AST-2107738.  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
-                <div style={{height:'20px'}}></div>
-                For additional Information, please contact: <br/><br/>
-                <strong><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></strong><br/>
-                <a href = "https://ciera.northwestern.edu/" target = "_blank">Northwestern University - CIERA</a><br/>				
-                1800 Sherman Ave., Evanston, IL 60201, USA<br/>
-                Office: 8019 (8th Floor)<br/>
-                Phone: (847) 467-6233   |   Fax: (847) 467-0679<br/>
-                Email: a-geller [at] northwestern.edu<br/>
+            <div className = "content" style = {{fontSize: "calc(10px + 0.3vw)", lineHeight: "calc(14px + 0.3vw)"}}>
+                This material is based upon work supported by the National Science Foundation under AAG Grant No. AST-2107738.  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation. <br/><br/>
+                © <b><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></b> 2023
             </div>
         </div>
     )
 }
 
-function PlotlyFigure({data}){
-
-    var dataUse;
-    var layout = {
-        width: data.div_width,
-        height: data.div_height
-    };
-    if (data.type === "histogram"){
-        dataUse = [{
-            x: data.x,
-            type: data.type,
-        },];
-        layout.xaxis = {title: data.x2_column === "" ? data.x_column : data.x_column + "-" + data.x2_column};
-        layout.yaxis = {title: 'N'};
-    } else if (data.type === "scatter"){
-        dataUse = [{
-            x: data.x,
-            y: data.y,
-            type: data.type,
-            mode:data.mode,
-        },]; 
-        layout.xaxis =  {title: data.x2_column === "" ? data.x_column : data.x_column + "-" + data.x2_column};
-        layout.yaxis = {title: data.y_column};
-    }
-
-    const config = {};
-    
-    return dataUse[0].x.length > 0 ? (
-            <div style= {{marginTop: "40px"}}>
-                <DynamicPlot data={dataUse} layout={layout} config={config} /> 
-            </div>
-        )
-    : null;
-
-}
 
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
@@ -419,12 +377,13 @@ function ExplorerContainer({label, count}){
         y:[],
         type:label,
         mode:label === "scatter" ? "markers" : "",
-        div_height:0,
-        div_width:0,
     });
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
     const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
+
+    const [plotlyLayout, setPlotlyLayout] = useState({width:0, height:0});
+
 
     ///////////////////
     // functions to set the div position
@@ -610,9 +569,6 @@ function ExplorerContainer({label, count}){
 
     }, [plotData.y_column]);
     
-    // resizing for the plot
-    // TO DO
-    
         
     ////////////////////////////
     // function controlling the settings
@@ -669,7 +625,7 @@ function ExplorerContainer({label, count}){
                         {renderDropdown(availableColumns.options, 'x_column')}
                         <br/><br/>
                         3a. (Optional) Select a column to subtract from the previous column (e.g., for a color) <br/>
-                        {renderDropdown(availableColumns.options, 'x2_column')}
+                        {renderDropdown(["None"].concat(availableColumns.options), 'x2_column')}
                     </div>
                 )}
                 {label === 'scatter' && (
@@ -684,7 +640,7 @@ function ExplorerContainer({label, count}){
                         {renderDropdown(availableColumns.options, 'x_column')}
                         <br/><br/>
                         3a. (Optional) Select a column to subtract from the previous column (e.g., for a color) <br/>
-                        {renderDropdown(availableColumns.options, 'x2_column')}
+                        {renderDropdown(["None"].concat(availableColumns.options), 'x2_column')}
                         <br/><br/>
                         4. Select the column for the y-axis <br/>
                         {renderDropdown(availableColumns.options, 'y_column')}
@@ -694,6 +650,70 @@ function ExplorerContainer({label, count}){
                 <div className = "button linkDiv" onClick={toggleSettings}>Done</div>
             </div>
           );
+    }
+
+    ////////////////////////////////////////////
+    // function for plotly
+
+    // Function to update the Plotly layout with the current div size
+    const updatePlotlyLayout = () => {
+        if (divRef.current) {
+            if (plotData.type === "histogram"){
+                setPlotlyLayout((prevData) => ({
+                    ...prevData,
+                    xaxis: {title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column},
+                    yaxis: {title: 'N'},
+                    width: divRef.current.clientWidth,
+                    height: divRef.current.clientHeight - 50
+                }))
+            } else if (plotData.type === "scatter"){
+                setPlotlyLayout((prevData) => ({
+                    ...prevData,
+                    xaxis: {title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column},
+                    yaxis: {title: plotData.y_column},
+                    width: divRef.current.clientWidth,
+                    height: divRef.current.clientHeight -50
+                }))
+            }
+            console.log(plotData)
+            console.log(`Parent element size - Width: ${divRef.current.clientWidth}, Height: ${divRef.current.clientHeight}`);
+        }
+    };
+
+
+    //observe for changes in the divRef size
+    useEffect(() => {
+        updatePlotlyLayout();
+        const resizeObserver = new ResizeObserver(updatePlotlyLayout);
+        if (divRef.current) {
+            resizeObserver.observe(divRef.current);
+        }
+    }, [plotData])
+
+    const plotlyFigure = () => {
+        var dataUse;
+        if (plotData.type === "histogram"){
+            dataUse = [{
+                x: plotData.x,
+                type: plotData.type,
+            },];
+        } else if (plotData.type === "scatter"){
+            dataUse = [{
+                x: plotData.x,
+                y: plotData.y,
+                type: plotData.type,
+                mode:plotData.mode,
+            },]; 
+        }
+    
+        const config = {};
+        
+        return dataUse[0].x.length > 0 ? (
+                <div style= {{marginTop: "40px"}}>
+                    <DynamicPlot data={dataUse} layout={plotlyLayout} config={config} /> 
+                </div>
+            )
+        : null;
     }
 
 
@@ -708,7 +728,7 @@ function ExplorerContainer({label, count}){
                 {explorerSettings()}
             </div>
             <div className = "explorerMain">
-                <PlotlyFigure data={plotData} />
+                {plotlyFigure()}
             </div>
             <div className = "explorerTopBar grabbable" 
                 draggable = {true}    
