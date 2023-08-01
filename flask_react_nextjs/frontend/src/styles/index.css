@@ -131,7 +131,7 @@ html,body{
 .explorerContainer{
     position:absolute;
     width:500px;
-    height:600px;
+    height:500px;
     border:2px solid black;
     border-radius:6px;
     background-color:var(--light);
@@ -179,6 +179,17 @@ html,body{
     display:block;
     z-index:1;
 }
+.settingsContainer{
+    position:absolute;
+    height:calc(100% - 200px);
+    width: calc(100% - 20px); /*  scrollbar */;
+    overflow:auto;
+    border-top:1px solid black;
+    border-bottom:1px solid black;
+    /* background-color:lightgray; */
+    padding:10px;
+}
+
 .explorerSettings .button{
     position:absolute;
     bottom:10px;

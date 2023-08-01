@@ -373,8 +373,12 @@ function ExplorerContainer({label, count}){
         x_column: "",
         x2_column: "",
         y_column: "",
+        color_column: "",
+        table_columns: {},
+        table_data: [],
         x:[],
         y:[],
+        color: [],
         type:label,
         mode:label === "scatter" ? "markers" : "",
         nbinsx:'',
@@ -513,11 +517,19 @@ function ExplorerContainer({label, count}){
                 let options = [];
                 data.columns.forEach(d => {
                     options.push({label: d, value: d})
-                });               
+                });
+                let check_options = {};
+                data.columns.forEach(d => {
+                    check_options[d] = false;
+                });                  
                 setAvailableColumns({
                     columns: data.columns,
                     options: options
                 });
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    table_columns: check_options,
+                }))
             })
             .catch(error => {
                 console.error('Error sending table data:', error);
@@ -574,7 +586,54 @@ function ExplorerContainer({label, count}){
 
     }, [plotData.y_column]);
     
-        
+    useEffect(() => {
+        // when the color_column changes
+        // - get the data from the table
+
+        fetch('/api/setColorColumn', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    color: data.color_data,
+                }))
+            })
+            .catch(error => {
+                console.error('Error sending color column:', error);
+            });
+
+    }, [plotData.color_column]);
+
+    useEffect(() => {
+        // when the table_columns changes
+        // - get the data from the table
+
+        fetch('/api/setTableData', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => response.json())
+            .then(data => {
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    table_data: data.table_data,
+                }))
+            })
+            .catch(error => {
+                console.error('Error setting table data:', error);
+            });
+
+    }, [plotData.table_columns]);
+
     ////////////////////////////
     // function controlling the settings
     const toggleSettings = () => {
@@ -622,23 +681,63 @@ function ExplorerContainer({label, count}){
         );
     };
 
+    const renderCheckboxGrid = (dataKey) => {
+        const handleCheckboxChange = (event) => {
+            const { name, checked } = event.target;
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: {
+                    ...prevData[dataKey],
+                        [name]: checked,
+                },
+            }));
+        };
+        
+        return (
+            <div style={{fontSize:'12px'}}>
+                <table>
+                <tbody>
+                    {Object.keys(plotData[dataKey]).map((option) => (
+                        <tr key={option}>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    name={option}
+                                    checked={plotData[dataKey][option]}
+                                    onChange={handleCheckboxChange}
+                                />
+                            </td>
+                            <td>{option}</td>
+                        </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+        );
+
+
+    };
+
     const explorerSettings = () => {
         return (
-            <div style={{ padding: '40px 10px' }}>
-                <p style={{ fontSize: '20px' }}>
+            <div style={{ padding: '40px 0px' }}>
+                <p style={{ fontSize: '20px', paddingLeft:'10px' }}>
                     <i>Settings</i>
                 </p>
                 {label === 'table' && (
-                    <div>
+                    <div className="settingsContainer">
                         1. Select the cluster <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
                         2. Select the data table <br/>
                         {renderDropdown(availableTables.options, 'table')}
+                        <br/><br/>
+                        2. Select the columns that you would like to show <br/>
+                        {renderCheckboxGrid('table_columns')}
                     </div>
                 )}
                 {label === 'histogram' && (
-                    <div>
+                    <div className="settingsContainer">
                         1. Select the cluster <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
@@ -654,12 +753,12 @@ function ExplorerContainer({label, count}){
                         4. (Optional) Set the number of bins <br/>
                         {renderTextInput('nbinsx')}
                         <br/><br/>
-                        5. (Optional) Set the x of range <br/>
+                        5. (Optional) Set the x-axis range <br/>
                         {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
                     </div>
                 )}
                 {label === 'scatter' && (
-                    <div>
+                    <div className="settingsContainer">
                         1. Select the cluster <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
@@ -675,15 +774,18 @@ function ExplorerContainer({label, count}){
                         4. Select the column for the y-axis <br/>
                         {renderDropdown(availableColumns.options, 'y_column')}
                         <br/><br/>
-                        5. (Optional) Set the x of range <br/>
+                        5. (Optional) Select a column for the point color <br/>
+                        {renderDropdown(["None"].concat(availableColumns.options), 'color_column')}
+                        <br/><br/>
+                        6. (Optional) Set the x-axis range <br/>
                         {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
                         <br/><br/>
-                        5. (Optional) Set the y of range <br/>
+                        7. (Optional) Set the y-axis range <br/>
                         {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
                     </div>
                 )}
                 <br/><br/>
-                <div className = "button linkDiv" onClick={toggleSettings}>Done</div>
+                <div className = "button linkDiv" style = {{marginLeft:'10px'}}onClick={toggleSettings}>Done</div>
             </div>
           );
     }
@@ -744,6 +846,7 @@ function ExplorerContainer({label, count}){
         }
     }, [plotData])
 
+    let plotDefined = false;
     const plotlyFigure = () => {
         var dataUse;
         if (plotData.type === "histogram"){
@@ -752,18 +855,44 @@ function ExplorerContainer({label, count}){
                 type: plotData.type,
                 nbinsx : plotData.nbinsx
             },];
+            if (dataUse[0].x.length > 0) plotDefined = true;
         } else if (plotData.type === "scatter"){
             dataUse = [{
                 x: plotData.x,
                 y: plotData.y,
                 type: plotData.type,
-                mode:plotData.mode,
+                mode: plotData.mode,
             },]; 
-        }
-    
+            if (plotData.color_column != "" && plotData.color.length === plotData.x.length){
+                dataUse[0].marker = {
+                    color: plotData.color,
+                    colorscale: 'Viridis',
+                    colorbar: {
+                        thickness:10,
+                        title: plotData.color_column,
+                    },
+                    showscale: true,
+                }
+            }
+            if (dataUse[0].x.length > 0 && dataUse[0].y.length > 0 ) plotDefined = true;
+        } else if (plotData.type === "table"){
+            let header = {values:[]};
+            Object.keys(plotData.table_columns).map((col) => {
+                if (plotData.table_columns[col]) header.values.push(["<b>" + col + "</b>"])
+            })
+            
+            dataUse = [{
+                type: plotData.type,
+                header: header,
+                cells: {
+                    values: plotData.table_data,
+                }
+            },]; 
+            if (dataUse[0].header.values.length > 0) plotDefined = true;
+        } 
         const config = {};
-        
-        return dataUse[0].x.length > 0 ? 
+
+        return plotDefined  ? 
             (
                 <div style= {{marginTop: "40px"}}>
                     <DynamicPlot data={dataUse} layout={plotlyLayout} config={config} /> 

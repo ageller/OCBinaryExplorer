@@ -124,6 +124,37 @@ class setYColumn(Resource):
         return {"y_data": y_data}, 200
 api.add_resource(setYColumn, '/api/setYColumn')
 
+class setColorColumn(Resource):
+    # set the database and return the available tables
+    def post(self):
+        data = request.json
+        color_data = []
+        if (data['cluster'] != ''):
+            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+            cursor = conn.cursor()
+            if (cursor and data['table'] != '' and data['color_column'] != ''):
+                color_data = get_column_data(cursor, data['table'], data['color_column'])
+        return {"color_data": color_data}, 200
+api.add_resource(setColorColumn, '/api/setColorColumn')
+
+class setTableData(Resource):
+    # set the database and return the available tables
+    def post(self):
+        data = request.json
+        table_data = []
+        if (data['cluster'] != ''):
+            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+            cursor = conn.cursor()
+            table_columns_use = []
+            for key, value in data['table_columns'].items():
+                if (value):
+                    table_columns_use.append(key)
+            if (cursor and data['table'] != '' and len(table_columns_use) > 0):
+                for c in table_columns_use:
+                    table_data.append(get_column_data(cursor, data['table'], c))
+        return {"table_data": table_data}, 200
+api.add_resource(setTableData, '/api/setTableData')
+
 # Running app
 if __name__ == '__main__':
     app.run(debug = True, port = 5000)
