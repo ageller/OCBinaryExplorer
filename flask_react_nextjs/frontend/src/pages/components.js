@@ -377,6 +377,11 @@ function ExplorerContainer({label, count}){
         y:[],
         type:label,
         mode:label === "scatter" ? "markers" : "",
+        nbinsx:'',
+        xmin:'',
+        xmax:'',
+        ymin:'',
+        ymax:'',
     });
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
@@ -588,15 +593,34 @@ function ExplorerContainer({label, count}){
         
         return (
           <select value = {plotData[dataKey]} onChange={handleDropdownChange}>
-            <option value="" disabled>Please select</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+                <option value="" disabled>Please select</option>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
           </select>
         );
-      };
+    };
+
+    const renderTextInput = (dataKey) => {
+        const handleTextInputChange = (event) => {
+            const selectedValue = event.target.value;
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: selectedValue,
+            }));
+        };
+        
+        return (
+            <input
+                type="text"
+                value={plotData[dataKey]}
+                onChange={handleTextInputChange}
+                placeholder=""
+          />
+        );
+    };
 
     const explorerSettings = () => {
         return (
@@ -626,6 +650,12 @@ function ExplorerContainer({label, count}){
                         <br/><br/>
                         3a. (Optional) Select a column to subtract from the previous column (e.g., for a color) <br/>
                         {renderDropdown(["None"].concat(availableColumns.options), 'x2_column')}
+                        <br/><br/>
+                        4. (Optional) Set the number of bins <br/>
+                        {renderTextInput('nbinsx')}
+                        <br/><br/>
+                        5. (Optional) Set the x of range <br/>
+                        {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
                     </div>
                 )}
                 {label === 'scatter' && (
@@ -644,6 +674,12 @@ function ExplorerContainer({label, count}){
                         <br/><br/>
                         4. Select the column for the y-axis <br/>
                         {renderDropdown(availableColumns.options, 'y_column')}
+                        <br/><br/>
+                        5. (Optional) Set the x of range <br/>
+                        {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
+                        <br/><br/>
+                        5. (Optional) Set the y of range <br/>
+                        {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
                     </div>
                 )}
                 <br/><br/>
@@ -661,22 +697,40 @@ function ExplorerContainer({label, count}){
             if (plotData.type === "histogram"){
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
-                    xaxis: {title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column},
-                    yaxis: {title: 'N'},
+                    xaxis: {
+                        title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column, 
+                        range: [plotData.xmin, plotData.xmax], 
+                        showline: true,
+                        zeroline: false,
+                    },
+                    yaxis: {
+                        title: 'N', 
+                        range: [plotData.ymin, plotData.ymax], 
+                        showline: true,
+                        zeroline: false,
+                    },
                     width: divRef.current.clientWidth,
                     height: divRef.current.clientHeight - 50
                 }))
             } else if (plotData.type === "scatter"){
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
-                    xaxis: {title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column},
-                    yaxis: {title: plotData.y_column},
+                    xaxis: {
+                        title: plotData.x2_column === "" ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column, 
+                        range: [plotData.xmin, plotData.xmax], 
+                        showline: true,
+                        zeroline: false,
+                    },
+                    yaxis: {
+                        title: plotData.y_column, 
+                        range: [plotData.ymin, plotData.ymax], 
+                        showline: true,
+                        zeroline: false,
+                    },
                     width: divRef.current.clientWidth,
                     height: divRef.current.clientHeight -50
                 }))
             }
-            console.log(plotData)
-            console.log(`Parent element size - Width: ${divRef.current.clientWidth}, Height: ${divRef.current.clientHeight}`);
         }
     };
 
@@ -696,6 +750,7 @@ function ExplorerContainer({label, count}){
             dataUse = [{
                 x: plotData.x,
                 type: plotData.type,
+                nbinsx : plotData.nbinsx
             },];
         } else if (plotData.type === "scatter"){
             dataUse = [{
@@ -708,12 +763,18 @@ function ExplorerContainer({label, count}){
     
         const config = {};
         
-        return dataUse[0].x.length > 0 ? (
+        return dataUse[0].x.length > 0 ? 
+            (
                 <div style= {{marginTop: "40px"}}>
                     <DynamicPlot data={dataUse} layout={plotlyLayout} config={config} /> 
                 </div>
             )
-        : null;
+        : 
+            (
+                <div style= {{margin: "60px 40px"}}>
+                    Please click on the gear icon above to define the settings.
+                </div>
+            );
     }
 
 

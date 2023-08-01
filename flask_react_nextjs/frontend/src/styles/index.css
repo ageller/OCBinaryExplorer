@@ -131,7 +131,7 @@ html,body{
 .explorerContainer{
     position:absolute;
     width:500px;
-    height:500px;
+    height:600px;
     border:2px solid black;
     border-radius:6px;
     background-color:var(--light);
