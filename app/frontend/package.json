@@ -12,6 +12,11 @@
   "dependencies": {
     "next": "13.4.12",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "three": "0.154.0",
+    "plotly.js":"2.25.0",
+    "react-plotly.js": "2.6.0",
+    "export-to-csv": "0.2.1",
+    "material-react-table":"1.14.0"
   }
 }
