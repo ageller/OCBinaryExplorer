@@ -6,6 +6,7 @@ from flask_restful import Api, Resource
 import sqlite3
 import os
 import pandas as pd
+import numpy as np
 
 # Initializing flask app
 app = Flask(__name__)
@@ -152,7 +153,7 @@ class setTableData(Resource):
             if (cursor and data['table'] != '' and len(table_columns_use) > 0):
                 for c in table_columns_use:
                     table_data_df[c] = get_column_data(cursor, data['table'], c)
-
+        table_data_df.fillna('', inplace=True)
         return {"table_data": table_data_df.to_dict(orient = 'records')}, 200
 api.add_resource(setTableData, '/api/setTableData')
 

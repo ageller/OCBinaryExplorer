@@ -10,7 +10,10 @@ import {GlobalStateContext} from '../context/globalState';
 import dynamic from 'next/dynamic';
 const DynamicPlot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-import {CreateMaterialReactTable} from './table'
+import { MaterialReactTable } from 'material-react-table';
+import { Box, Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
 
 
 function SideBarButton({label, icon, style}){
@@ -55,7 +58,6 @@ function SideBar({buttons}){
     )
 }
 
-
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
     const {globalState, setShowExplorerDivAtIndex} = useContext(GlobalStateContext);
@@ -97,7 +99,7 @@ function ExplorerContainer({label, count}){
     const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
 
     const [plotlyLayout, setPlotlyLayout] = useState({width:0, height:0});
-
+    const [tableLayout, setTableLayout] = useState({maxHeight:'100px'})
 
     ///////////////////
     // functions to set the div position
@@ -499,7 +501,7 @@ function ExplorerContainer({label, count}){
     // function for visualizing the data
 
     // Function to update the Plotly layout with the current div size
-    const updatePlotlyLayout = () => {
+    const updateVisualizationLayout = () => {
         if (divRef.current) {
             if (plotData.type === "histogram"){
                 setPlotlyLayout((prevData) => ({
@@ -535,17 +537,23 @@ function ExplorerContainer({label, count}){
                         zeroline: false,
                     },
                     width: divRef.current.clientWidth,
-                    height: divRef.current.clientHeight -50
+                    height: divRef.current.clientHeight - 50
+                }))
+            } else if (plotData.type === "table"){
+                setTableLayout((prevData) => ({
+                    ...prevData,
+                    maxHeight: (divRef.current.clientHeight - 250) + 'px'
                 }))
             }
+
         }
     };
 
 
     //observe for changes in the divRef size
     useEffect(() => {
-        updatePlotlyLayout();
-        const resizeObserver = new ResizeObserver(updatePlotlyLayout);
+        updateVisualizationLayout();
+        const resizeObserver = new ResizeObserver(updateVisualizationLayout);
         if (divRef.current) resizeObserver.observe(divRef.current);
 
         // Cleanup the observer when the component unmounts
@@ -567,11 +575,28 @@ function ExplorerContainer({label, count}){
                 }
             )
         })
-        // console.log(plotData.table_data)
-        // console.log(header)
         return header
     },[plotData.table_columns]);
 
+    const csvOptions = {
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalSeparator: '.',
+        showLabels: true,
+        useBom: true,
+        useKeysAsHeaders: false,
+        headers: use_table_columns.map((c) => c.header),
+    };
+      
+    const csvExporter = new ExportToCsv(csvOptions);
+
+    const handleExportRows = (rows) => {
+        csvExporter.generateCsv(rows.map((row) => row.original));
+    };
+    
+    const handleExportData = () => {
+        csvExporter.generateCsv(plotData.table_data);
+    };
 
     const visualizeData = () => {
         var dataUse;
@@ -628,7 +653,58 @@ function ExplorerContainer({label, count}){
   
                 return (
                     <div style= {{marginTop: "40px"}}>
-                        <CreateMaterialReactTable columns={use_table_columns} data={plotData.table_data}/>
+                        <MaterialReactTable  
+                            columns={use_table_columns} 
+                            data={plotData.table_data}
+                            enableRowSelection
+                            initialState={{ 
+                                pagination: 
+                                    { 
+                                        pageSize: 5, 
+                                        pageIndex: 1, 
+                                    },
+                                density: 'compact' 
+                                }}
+                                enableStickyHeader
+                            muiTableContainerProps={{ 
+                                sx: { 
+                                    maxHeight: tableLayout.maxHeight,
+                                } 
+                            }}
+                            muiTablePaginationProps={{
+                                rowsPerPageOptions: [5, 10, 25, 100, 1000],
+                            }}
+                            renderTopToolbarCustomActions={({ table }) => (
+                                <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
+                                    <Button
+                                        sx={{ 
+                                            backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--banner'),
+                                            color: getComputedStyle(document.documentElement).getPropertyValue('--foreground'),
+                                        }}
+                                        disabled={table.getPrePaginationRowModel().rows.length === 0}
+                                        //export all rows, including from the next page, (still respects filtering and sorting)
+                                        onClick={() => handleExportRows(table.getPrePaginationRowModel().rows)}
+                                        startIcon={<FileDownloadIcon />}
+                                        variant="contained"
+                                    >
+                                        Export All Rows
+                                    </Button>
+                                    <Button
+                                        sx={{ 
+                                            backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--banner'),
+                                            color: getComputedStyle(document.documentElement).getPropertyValue('--foreground'),
+                                        }}
+                                        disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                                        //only export selected rows
+                                        onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
+                                        startIcon={<FileDownloadIcon />}
+                                        variant="contained"
+                                    >
+                                        Export Selected Rows
+                                    </Button>
+                                </Box>
+                            )}
+                        />
                     </div>
                 )
             }
