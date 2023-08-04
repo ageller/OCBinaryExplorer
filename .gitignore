@@ -3,19 +3,24 @@
 *cache*
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+oc_binary_explorer/node_modules
+oc_binary_explorer/frontend/node_modules
+oc_binary_explorer/.pnp*
+oc_binary_explorer/frontend/.pnp*
 
 # testing
-/coverage
+oc_binary_explorer/coverage
+oc_binary_explorer/frontend/coverage
 
 # next.js
-/.next/
-/out/
+oc_binary_explorer/.next/
+oc_binary_explorer/frontend/.next/
+oc_binary_explorer/out/
+oc_binary_explorer/frontend/out/
 
 # production
-/build
+oc_binary_explorer/build
+oc_binary_explorer/frontend/build
 
 # misc
 .DS_Store
