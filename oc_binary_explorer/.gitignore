@@ -1,19 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+oc_binary_explorer/node_modules
+oc_binary_explorer/.pnp
+oc_binary_explorer/.pnp.js
 
 # testing
-/coverage
+oc_binary_explorer/coverage
 
 # next.js
-/.next/
-/out/
+oc_binary_explorer/.next
+oc_binary_explorer/out
 
 # production
-/build
+oc_binary_explorer/build
 
 # misc
 .DS_Store
