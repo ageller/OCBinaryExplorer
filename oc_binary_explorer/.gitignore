@@ -2,6 +2,7 @@
 
 # dependencies
 oc_binary_explorer/node_modules
+oc_binary_explorer/frontend/node_modules
 oc_binary_explorer/.pnp
 oc_binary_explorer/.pnp.js
 
@@ -9,7 +10,8 @@ oc_binary_explorer/.pnp.js
 oc_binary_explorer/coverage
 
 # next.js
-oc_binary_explorer/.next
+oc_binary_explorer/.next/
+oc_binary_explorer/frontend/.next/
 oc_binary_explorer/out
 
 # production
