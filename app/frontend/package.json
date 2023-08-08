@@ -17,6 +17,8 @@
     "plotly.js":"2.25.0",
     "react-plotly.js": "2.6.0",
     "export-to-csv": "0.2.1",
-    "material-react-table":"1.14.0"
+    "material-react-table":"1.14.0",
+    "@mui/material":"5.14.4",
+    "@mui/icons-material":"5.14.3"
   }
 }
