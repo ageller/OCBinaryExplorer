@@ -65,7 +65,7 @@ class getAvailableClusters(Resource):
     def get(self):
         clusters = get_available_clusters()
         return {'clusters':clusters}
-api.add_resource(getAvailableClusters, '/api/getAvailableClusters')
+api.add_resource(getAvailableClusters, '/ocbexapi/getAvailableClusters')
 
 class setCluster(Resource):
     # set the database and return the available tables
@@ -78,7 +78,7 @@ class setCluster(Resource):
             if (cursor):
                 tables = get_available_tables(cursor)
         return {"tables": tables}, 200
-api.add_resource(setCluster, '/api/setCluster')
+api.add_resource(setCluster, '/ocbexapi/setCluster')
 
 class setTable(Resource):
     # set the database and return the available tables
@@ -91,7 +91,7 @@ class setTable(Resource):
             if (cursor and data['table'] != ''):
                 columns = get_available_columns(cursor, data['table'])
         return {"columns": columns}, 200
-api.add_resource(setTable, '/api/setTable')
+api.add_resource(setTable, '/ocbexapi/setTable')
 
 class setXColumn(Resource):
     # set the database and return the available tables
@@ -110,7 +110,7 @@ class setXColumn(Resource):
                 x2_data = get_column_data(cursor, data['table'], data['x2_column'])
                 x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
         return {"x_data": x_data}, 200
-api.add_resource(setXColumn, '/api/setXColumn')
+api.add_resource(setXColumn, '/ocbexapi/setXColumn')
 
 class setYColumn(Resource):
     # set the database and return the available tables
@@ -123,7 +123,7 @@ class setYColumn(Resource):
             if (cursor and data['table'] != '' and data['y_column'] != ''):
                 y_data = get_column_data(cursor, data['table'], data['y_column'])
         return {"y_data": y_data}, 200
-api.add_resource(setYColumn, '/api/setYColumn')
+api.add_resource(setYColumn, '/ocbexapi/setYColumn')
 
 class setColorColumn(Resource):
     # set the database and return the available tables
@@ -136,7 +136,7 @@ class setColorColumn(Resource):
             if (cursor and data['table'] != '' and data['color_column'] != ''):
                 color_data = get_column_data(cursor, data['table'], data['color_column'])
         return {"color_data": color_data}, 200
-api.add_resource(setColorColumn, '/api/setColorColumn')
+api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 
 class setTableData(Resource):
     # set the database and return the available tables
@@ -155,7 +155,7 @@ class setTableData(Resource):
                     table_data_df[c] = get_column_data(cursor, data['table'], c)
         table_data_df.fillna('', inplace=True)
         return {"table_data": table_data_df.to_dict(orient = 'records')}, 200
-api.add_resource(setTableData, '/api/setTableData')
+api.add_resource(setTableData, '/ocbexapi/setTableData')
 
 # Running app
 if __name__ == '__main__':

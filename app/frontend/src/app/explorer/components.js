@@ -165,7 +165,7 @@ function ExplorerContainer({label, count}){
 
     useEffect(() => {
         // get the clusters (this could be done once for the entire )
-        fetch("/api/getAvailableClusters")
+        fetch("/ocbexapi/getAvailableClusters")
             .then(res => res.json())
             .then(data => {
                 let options = [];
@@ -184,7 +184,7 @@ function ExplorerContainer({label, count}){
         // - set the cluster on the backend
         // - get the available tables for that cluster
 
-        fetch('/api/setCluster', {
+        fetch('/ocbexapi/setCluster', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ function ExplorerContainer({label, count}){
         // when the table changes
         // - get the available columns for that table
 
-        fetch('/api/setTable', {
+        fetch('/ocbexapi/setTable', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -248,7 +248,7 @@ function ExplorerContainer({label, count}){
         // when the x_column or x2_column changes
         // - get the data from the table
 
-        fetch('/api/setXColumn', {
+        fetch('/ocbexapi/setXColumn', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -273,7 +273,7 @@ function ExplorerContainer({label, count}){
         // when the y_column changes
         // - get the data from the table
 
-        fetch('/api/setYColumn', {
+        fetch('/ocbexapi/setYColumn', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -297,7 +297,7 @@ function ExplorerContainer({label, count}){
         // when the color_column changes
         // - get the data from the table
 
-        fetch('/api/setColorColumn', {
+        fetch('/ocbexapi/setColorColumn', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ function ExplorerContainer({label, count}){
         // when the table_columns changes
         // - get the data from the table
 
-        fetch('/api/setTableData', {
+        fetch('/ocbexapi/setTableData', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
