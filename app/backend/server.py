@@ -34,7 +34,16 @@ def get_available_tables(cursor):
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tbls = cursor.fetchall()
     tables = [t[0] for t in tbls]
-    return tables
+    # sort this so that the files with "posterior_for_id_" come last
+    first = []
+    last = []
+    for t in tables:
+        if ("posterior_for_id_" in t):
+            last.append(t)
+        else:
+            first.append(t)
+            
+    return first + last
 
 def get_available_columns(cursor, table_name):
     # Execute the PRAGMA to get table information
