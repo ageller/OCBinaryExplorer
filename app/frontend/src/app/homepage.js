@@ -10,7 +10,7 @@ export default function HomePage() {
 
     let headerProps = {
         title:"Open Cluster Binary Explorer",
-        subtitle:"Access binary-star data in hundreds of open clusters", 
+        subtitle:"Access photometric binary-star data in a collection of open clusters", 
         subsubtitle:<>An NSF-funded research project from PI <a href="https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller.</a></>
     }
 

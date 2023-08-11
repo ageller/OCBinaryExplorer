@@ -13,6 +13,7 @@ function ExplorerEntry(){
     const [top0, setTop0] = useState(0);
     const [sceneContainerStyle, setSceneContainerStyle] = useState({width:"100%", height: '500px'});
     const sceneContainerRef = useRef(null);
+    const [availableClusters, setAvailableClusters] = useState([]);
 
     // Function to handle window resize event
     useEffect(() => {
@@ -37,6 +38,19 @@ function ExplorerEntry(){
     }, []);
 
     useEffect(() => {
+        // get the clusters (this could be done once for the entire )
+        fetch("/ocbexapi/getAvailableClusters")
+            .then(res => res.json())
+            .then(data => {
+                let options = [];
+                data.clusters.forEach(d => {
+                    options.push({label: d.replaceAll('_',' '), value: d})
+                });
+                setAvailableClusters(data.clusters);
+            })
+    }, []);
+
+    useEffect(() => {
         // Set up the Three.js scene
         // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
         const setupScene = () => {
@@ -57,7 +71,7 @@ function ExplorerEntry(){
 
     
         // Add points to the scene
-        const addPoints = (scene, coordinates) => {
+        const addPoints = (scene, coordinates, color) => {
             const vertices = [];
             const sizes = [];
             coordinates.forEach(({name, x, y, z, rh}) => {
@@ -69,8 +83,7 @@ function ExplorerEntry(){
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
             geometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(sizes), 1));
-            const colorValue = getComputedStyle(document.documentElement).getPropertyValue('--foreground');
-            const color = new THREE.Color(colorValue.trim());
+
 
             // Create the shader material
             const material = new THREE.ShaderMaterial({
@@ -146,7 +159,16 @@ function ExplorerEntry(){
         fetch('data/OCdata_forUnity.csv')
             .then((response) => response.text())
             .then((data) => {
-                const coordinates = [];
+                console.log("available clusters", availableClusters);
+
+                // coordinate arrays and colors for the two samples
+                const coordinatesOther = [];
+                const colorValueOther = getComputedStyle(document.documentElement).getPropertyValue('--foreground');
+                const colorOther = new THREE.Color(colorValueOther.trim());
+                const coordinatesAvail = [];
+                const colorValueAvail = getComputedStyle(document.documentElement).getPropertyValue('--link');
+                const colorAvail = new THREE.Color(colorValueAvail.trim());
+
                 const lines = data.trim().split('\n');
                 const headers = lines[0].split(',');
                 for (let i = 1; i < lines.length; i++) {
@@ -155,23 +177,29 @@ function ExplorerEntry(){
                     for (let j = 0; j < headers.length; j++) {
                         coordinate[headers[j]] = values[j];
                     }
-                    coordinates.push(coordinate);
+                    if (availableClusters.includes(values[0])){
+                        console.log('found available cluster', values[0]);
+                        coordinatesAvail.push(coordinate);
+                    } else {
+                        coordinatesOther.push(coordinate);
+                    }
                 }
                 // const objects = addObjects(scene, coordinates);
-                const points = addPoints(scene, coordinates);
+                const pointsOther = addPoints(scene, coordinatesOther, colorOther);
+                const pointsAvail = addPoints(scene, coordinatesAvail, colorAvail);
                 animateScene(scene, renderer, camera, controls);
         });
 
         // Clean up the scene when the component is unmounted
         return cleanupScene(renderer);
-      }, [windowHeight, top0]);
+      }, [windowHeight, top0, availableClusters]);
 
     return(
         <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
             <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
             <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0}}>
-                <div className = "subheader lightColor">[Explanation of the analysis]</div>
-                <div className = "lightColor" style = {{ margin: '10px 0px 10px 16px' }}>[Some text about analysis and BASE-9]</div>
+                <div className = "explainer">We use the Bayesian Analysis of Stellar Evolution with Nine Parameters <a href = "https://base-9.readthedocs.io/en/latest/" target = "blank">(BASE-9)</a> software suite along with Gaia kinematics and distances and photometry from Gaia, Pan-STARRS and 2MASS to characterise the binary-star populations in a collection of open clusters.  For information about our methods and results, please see the Papers section at the bottom of this page.  You can access these data by clicking on the button below.</div>
+                <div className = "explainerSmall" style = {{ margin: '10px 16px 20px 16px' }}>The interactive visualization above shows the open cluster population as seem from Earth, with the clusters in this study highlighted in pink.</div>
                 <ExplorerEntryButton />
             </div>
         </div> 

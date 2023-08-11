@@ -11,8 +11,7 @@
 	--link:#FC6471;
 	--banner:#3066BE;
     --lightInstructions:lightgrey;
-
-
+	--highlight:#FFD700;
 }
 
 html,body{
@@ -303,8 +302,19 @@ html,body{
 	font-style: italic;
 	color:  var(--light);
 }
-
-
+.explainer{
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 20px;
+	font-style: italic;
+	color:  var(--light);
+    text-align: justify;
+}
+.explainerSmall{
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 16px;
+	color:  var(--light);
+    text-align: justify;
+}
 /* links */
 a:link {
 	color: var(--link);
