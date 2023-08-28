@@ -277,7 +277,6 @@ function Team({ contributors }){
 
 function Paper({ content }){
 
-    console.log({content})
     return( 
         <li className = "paperContent">
             {content}
@@ -286,7 +285,6 @@ function Paper({ content }){
 }
 function Papers({ papers }){
 
-    console.log(papers)
     return(
         <>
             <div className = "headerSmall darkColor">Papers</div>
