@@ -277,19 +277,24 @@ function Team({ contributors }){
 
 function Paper({ content }){
 
+    console.log({content})
     return( 
-        <div className = "paperContent">
-        </div>
+        <li className = "paperContent">
+            {content}
+        </li>
     )
 }
 function Papers({ papers }){
 
+    console.log(papers)
     return(
         <>
             <div className = "headerSmall darkColor">Papers</div>
-            {papers.map((d, i) => (
-                <Paper key = {i} {...d}/>
-            ))}
+            <ul>
+                {papers.map((d, i) => (
+                    <Paper key = {i} {...d}/>
+                ))}
+            </ul>
         </>
     )
 }

@@ -50,7 +50,17 @@ export default function HomePage() {
     };
 
     let paperProps = {
-        papers:[]
+        papers:[
+            {
+                content: "Childs, C. A., Geller, A. M., von Hippel, T., Motherway, E., and Zwicker, C., 'Goodbye Chi-by-Eye: A Bayesian Analysis of Photometric Binaries in Six Open Clusters', 2023, submitted to ApJ"
+            },
+            {
+                content:"Motherway, E., Geller, A. M., Childs, A. C., Zwicker, C., and von Hippel, T., 'Tracing the Origins of Mass Segregation in M35: Evidence for Primordially Segregated Binaries', 2023, submitted to ApJL"
+            },
+            {
+                content:"Zwicker, C., Geller, A. M., Childs, A. C., Motherway, E., and von Hippel, T., 'Investigating Mass Segregation of the Binary Stars in the Open Cluster NGC 6819', 2023, submitted to ApJL"
+            }
+        ]
     };
 
     return (
