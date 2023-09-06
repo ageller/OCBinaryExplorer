@@ -5,7 +5,7 @@ import React from 'react';
 import { GlobalStateProvider } from './context/globalState';
 
 export const metadata = {
-  title: 'OC Binary Explorerer',
+  title: 'OC Binary Explorer',
   description: 'from Aaron M. Geller',
 }
 
