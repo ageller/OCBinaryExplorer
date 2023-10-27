@@ -56,14 +56,14 @@ Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of the
 - `stage` : analysis stage (see the [BASE-9 documentation](https://base-9.readthedocs.io/en/latest/) for a detailed explanation)
 
 
-####  `posterior_for_id_*` : posteriod distribution from our BASE-9 `sampleMass` analysis for each star.  The `*` should be replaced by a `source_id` for cluster members
+####  `posterior_for_id_*` : posterior distribution from our BASE-9 `sampleMass` analysis for each star.  The `*` should be replaced by a `source_id` for cluster members
 
 - `iteration` : iteration number in the MCMC chain
 - `mass` : posterior value at each iteration for the stellar mass in solar masses
 - `massRatio` : posterior value at each iteration for the mass ratio (m2/m1)
 - `membership` : posterior value at each iteration for the cluster membership probatility (binary value, 1 for member and 0 for non-member)
 
-#### `parsec_isochrone` : PARSEC isochrone produced from the median values of the cluster posterior distribution, produced using BASE-9's `makeCMD` tool
+#### `parsec_isochrone` : PARSEC isochrone produced from the median values of the cluster posterior distribution using BASE-9's `makeCMD` tool
 
 Columns here should be self explanatory (each contains the magnitude in the given filter, except for the columns labelled `Mass` which contains the stellar mass in solar units); see the [PARSEC website](http://stev.oapd.inaf.it/cgi-bin/cmd) for more information. 
 
