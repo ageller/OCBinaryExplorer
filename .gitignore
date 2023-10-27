@@ -43,7 +43,7 @@ next-env.d.ts
 
 # python
 *ipynb_checkpoints*
-#__pycache__
+__pycache__
 *.pyc
 
 # database files
