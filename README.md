@@ -65,7 +65,7 @@ Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of the
 
 #### `parsec_isochrone` : PARSEC isochrone produced from the median values of the cluster posterior distribution using BASE-9's `makeCMD` tool
 
-Columns here should be self explanatory (each contains the magnitude in the given filter, except for the columns labelled `Mass` which contains the stellar mass in solar units); see the [PARSEC website](http://stev.oapd.inaf.it/cgi-bin/cmd) for more information. 
+Columns here should be self explanatory (each contains the magnitude in the given filter, except for the column labelled `Mass` which contains the stellar mass in solar units); see the [PARSEC website](http://stev.oapd.inaf.it/cgi-bin/cmd) for more information. 
 
 #### `stars_summary` : summary information for each star in our sample 
 
