@@ -5,7 +5,8 @@ A website to explore results from the BASE-9 Open Cluster project
 
 Users can interact with data in multiple ways within the website.  Data files are stored in `sqlite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table. 
 
-### `cluster_summary.db` : the summary database
+### `cluster_summary.db` : 
+the summary database
 
 This file contains one table : `cluster_parameters`, with the following columns:
 
@@ -38,7 +39,8 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `tot_mass_M_Sun`, `tot_mass_16_M_Sun`, `tot_mass_84_M_Sun` : total cluster mass (counting all stars in our sample) in solar masses and the 16th and 84th percentiles of the total mass  
 - `tr_Myr`, `tr_16_Myr`, `tr_84_Myr` : half-mass relaxation time for the cluster in Myr and the 16th and 84th percentiles for that value
 
-### `NGC_*.db` : the cluster database
+### `NGC_*.db` : 
+the cluster database
 
 Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of these files are multiple tables.  Each table and the columns they contain are described below.
 
