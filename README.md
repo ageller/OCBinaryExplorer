@@ -38,8 +38,7 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `tot_mass_M_Sun`, `tot_mass_16_M_Sun`, `tot_mass_84_M_Sun` : total cluster mass (counting all stars in our sample) in solar masses and the 16th and 84th percentiles of the total mass  
 - `tr_Myr`, `tr_16_Myr`, `tr_84_Myr` : half-mass relaxation time for the cluster in Myr and the 16th and 84th percentiles for that value
 
-### `NGC_*.db` : 
-the cluster database
+### `NGC_*.db` : the cluster database
 
 Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of these files are multiple tables.  Each table and the columns they contain are described below.
 
@@ -59,10 +58,10 @@ Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of the
 
 ####  `posterior_for_id_*` : posteriod distribution from our BASE-9 `sampleMass` analysis for each star.  The `*` should be replaced by a `source_id` for cluster members
 
-`iteration` : iteration number in the MCMC chain
-`mass` : posterior value at each iteration for the stellar mass in solar masses
-`massRatio` : posterior value at each iteration for the mass ratio (m2/m1)
-`membership` : posterior value at each iteration for the cluster membership probatility (binary value, 1 for member and 0 for non-member)
+- `iteration` : iteration number in the MCMC chain
+- `mass` : posterior value at each iteration for the stellar mass in solar masses
+- `massRatio` : posterior value at each iteration for the mass ratio (m2/m1)
+- `membership` : posterior value at each iteration for the cluster membership probatility (binary value, 1 for member and 0 for non-member)
 
 #### `parsec_isochrone` : PARSEC isochrone produced from the median values of the cluster posterior distribution, produced using BASE-9's `makeCMD` tool
 
