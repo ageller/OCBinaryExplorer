@@ -43,7 +43,6 @@ Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of the
 - `FeH` : posterior value at each iteration for the metallicity of the cluster
 - `modulus` : posterior value at each iteration for the distance modulus of the cluster in magnitudes 
 - `absorption` : posterior value at each iteration for the `Av` value of the cluster in magnitudes
-#### what is logPost
 - `logPost` : log of the likelihood value at each iteration
 - `stage` : analysis stage (see the [BASE-9 documentation](https://base-9.readthedocs.io/en/latest/) for a detailed explanation)
 
