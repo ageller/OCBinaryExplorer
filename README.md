@@ -62,7 +62,7 @@ Columns here should be self explanatory (each contains the magnitude in the give
 
 - `source_id` : Gaia source ID of the star
 - `ra`, `dec` : the right ascension and declination of the star in degrees
-- `pmra`, `pmdec` : the proper motion measurements of the star in right ascension and dclination in mas/yr
+- `pmra`, `pmdec` : the proper motion measurements of the star in right ascension (ra*cos(dec)) and declination in mas/yr
 - `radial_velocity` : the RV measurement of the star in km/s
 - `G`, `phot_g_mean_flux_over_error`, `G_BP`, `phot_bp_mean_flux_over_error`, `G_RP`, `phot_rp_mean_flux_over_error` : the Gaia photometric measurements and errors taken in Gaia G, G_BP, and G_RP bandpasses
 - `parallax` : the parallax measurement of the star in mas 
