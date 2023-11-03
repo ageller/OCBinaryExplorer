@@ -13,10 +13,10 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `Center_RA_hr`, `Center_Dec_deg` : central right ascension (in hours) and declination (in degrees) for the cluster
 - `Age_Gyr`, `Age_16_Gyr`, `Age_84_Gyr` ,  : median, 16th percentile and 84th percentile of the age posterior in Gyr for the cluster derived from our BASE-9 analysis
 - `[Fe/H]`, `[Fe/H]_16`, `[Fe/H]_84` : median, 16th percentile and 84th percentile of the metallicity posterior for the cluster derived from our BASE-9 analysis 
-- `Distance_m-M`, `Distance_m-M_16`, `Distance_m-M_84` : median, 16th percentile and 84th percentile of the distance modulus posterior in magnitudes for the cluster derived from our BASE-9 analysis 
+- `Distance_m-M`, `Distance_16_m-M_16`, `Distance_84_m-M` : median, 16th percentile and 84th percentile of the distance modulus posterior in magnitudes for the cluster derived from our BASE-9 analysis 
 - `Distance_pc` : median distance to the cluster in parsecs derived from our BASE-9 analysis
-- `Av_mag`, `Av_mag_16`, `Av_mag_84` : median, 16th percentile and 84th percentile of the extinction posterior in magnitudes for the cluster derived from our BASE-9 analysis 
-- `r_h_deg`, `r_h_pc`  : cluster half-mass radius in degrees and parsecs
+- `Av_mag`, `Av_16_mag`, `Av_84_mag` : median, 16th percentile and 84th percentile of the extinction posterior in magnitudes for the cluster derived from our BASE-9 analysis 
+- `r_h_deg`, `r_h_pc`  : cluster half-mass radius in degrees and parsecs (2D projection)
 - `r_eff_arcmin` :  cluster effective radius in arcminutes
 - `r_core_arcmin`, `r_core_pc`,  `sig_r_core_arcmin` : cluster core radius in arcminutes and parsecs, and the 1 sigma error on the cluster core radius in arcminutes,  derived from a King model fit to the MLMS sample (and assuming the median distance to the cluster)
 - `r_tidal_arcmin`, `sig_r_tidal_arcmin` : cluster tidal radius and the 1 sigma error on the cluster tidal radius in arcminutes aderived from a King model fit to the MLMS sample
@@ -30,6 +30,10 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `fb_MLMS_c_big_q`, `sig_fb_MLMS_c_big_q` : incompleteness corrected binary fraction for the MLMS stars, including only binaries with q > 0.4, and the 1 sigma uncertainty on that value for the cluster
 - `tot_mass_M_Sun`, `tot_mass_16_M_Sun`, `tot_mass_84_M_Sun` : total cluster mass (counting all stars in our sample) in solar masses and the 16th and 84th percentiles of the total mass  
 - `tr_Myr`, `tr_16_Myr`, `tr_84_Myr` : half-mass relaxation time for the cluster in Myr and the 16th and 84th percentiles for that value
+- `mean_RV_km_per_s` : mean radial velocity from Gaia in km/s for cluster members
+- `mean_pmracosdec_mas_per_yr` : mean proper motion in RA*cos(Dec) from Gaia in mas/yr for cluster members
+- `mean_pmdec_mas_per_yr` : : mean proper motion in Dec from Gaia in mas/yr for cluster members
+- `mean_distance_pc`: mean distance from inverting the Gaia parallax in pc for cluster members
 
 ### `NGC_*.db` : the cluster database
 
@@ -65,7 +69,7 @@ Columns here should be self explanatory (each contains the magnitude in the give
 - `pmra`, `pmdec` : the proper motion measurements of the star in right ascension (ra*cos(dec)) and declination in mas/yr
 - `radial_velocity` : the RV measurement of the star in km/s
 - `G`, `phot_g_mean_flux_over_error`, `G_BP`, `phot_bp_mean_flux_over_error`, `G_RP`, `phot_rp_mean_flux_over_error` : the Gaia photometric measurements and errors taken in Gaia G, G_BP, and G_RP bandpasses
-- `parallax` : the parallax measurement of the star in mas 
+- `distance_1_per_parallax_arcsec` : the distance to the star, calculated as 1/parallax(arcsec) 
 - `teff_gspphot` :  the effective temperature estimate from Gaia 
 - `ruwe` : the ruwe value from Gaia
 - `number_of_neighbours`, `number_of_mates` : ancillary data from Gaia catalog matching 
