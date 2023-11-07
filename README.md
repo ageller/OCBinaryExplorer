@@ -1,7 +1,7 @@
 # OC Binary Explorer
 A website to explore results from the BASE-9 Open Cluster project
 
-## Explanation of data
+## Explanation of the data
 
 Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/).  Data files are stored in `sqlite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table. 
 
