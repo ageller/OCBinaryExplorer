@@ -328,7 +328,13 @@ function ExplorerContainer({label, count}){
             },
             body: JSON.stringify(plotData),
           })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // If response is not OK, throw an error to catch block
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 setPlotData((prevData) => ({
                     ...prevData,
@@ -400,8 +406,25 @@ function ExplorerContainer({label, count}){
             }));
         };
         
+        // function to select all boxes
+        const selectAllCheckboxes = () => {
+            const allSelected = Object.values(plotData[dataKey]).every((value) => value === true);
+
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: Object.fromEntries(
+                    Object.keys(prevData[dataKey]).map((option) => [option, !allSelected])
+                ),
+            }));
+        };
+    
         return (
             <div style={{fontSize:'12px'}}>
+                {Object.keys(plotData[dataKey] || {}).length > 0 && (
+                <>
+                    <button id="selectAllBtn" onClick={selectAllCheckboxes}>Select All</button>
+                </>
+                )}
                 <table>
                 <tbody>
                     {Object.keys(plotData[dataKey]).map((option) => (
