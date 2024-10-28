@@ -576,7 +576,7 @@ function ExplorerContainer({label, count}){
                         {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
                     </div>
                 )}
-                {label === 'free' && (
+                {label === 'explore' && (
                     <div className="settingsContainer">
                         1. Select the cluster <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
@@ -641,7 +641,7 @@ function ExplorerContainer({label, count}){
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
                 }))
-            } else if (plotData.type === "free"){
+            } else if (plotData.type === "explore"){
                 setTableLayout((prevData) => ({
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
@@ -813,7 +813,7 @@ function ExplorerContainer({label, count}){
         } 
 
         // for free exploration, I will use pygwalker : https://github.com/Kanaries/pygwalker
-        if (plotData.type === "free"){
+        if (plotData.type === "explore"){
             {
 
                 if (plotData.table_data.length > 0) {
