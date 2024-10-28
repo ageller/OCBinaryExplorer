@@ -137,6 +137,24 @@ function ExplorerContainer({label, count}){
     const [plotlyLayout, setPlotlyLayout] = useState({width:0, height:0});
     const [tableLayout, setTableLayout] = useState({maxHeight:'100px'})
 
+    // update the max sizes if the user resizes the window
+    useEffect(() => {
+        const handleResize = () => {
+            setPos((prevPos) => ({
+                ...prevPos,
+                maxWidth: window.innerWidth - left0,
+                maxHeight: window.innerHeight - top0
+            }));
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [left0, top0]);  // Dependencies that might affect the resize calculation
+
     ///////////////////
     // functions to set the div position
     const getMaxZValue = () => {
