@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 
 # from flask_cors import CORS, cross_origin
@@ -7,6 +7,7 @@ import sqlite3
 import os
 import pandas as pd
 import numpy as np
+import pygwalker as pyg
 
 # Initializing flask app
 app = Flask(__name__)
@@ -161,10 +162,28 @@ class setTableData(Resource):
                     table_columns_use.append(key)
             if (cursor and data['table'] != '' and len(table_columns_use) > 0):
                 for c in table_columns_use:
-                    table_data_df[c] = get_column_data(cursor, data['table'], c)
+                    try:
+                        col_data = get_column_data(cursor, data['table'], c)
+                        table_data_df[c] = col_data
+                    except:
+                        pass
         table_data_df.fillna('', inplace=True)
         return {"table_data": table_data_df.to_dict(orient = 'records')}, 200
 api.add_resource(setTableData, '/ocbexapi/setTableData')
+
+class myPygwalker(Resource):
+    # create the pyGwalker data explorer
+    # I created a plot that had configs I liked, and copied that config line below
+    def post(self):
+        data = request.json
+        pyg_html_str = "Error creating PyGwalker instance"
+        if (len(data['table_data']) > 0):
+            df = pd.DataFrame(data['table_data'])  
+            pyg_html_str = pyg.to_html(df, appearance = 'light', 
+                spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"iteration","name":"iteration","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"logAge","name":"logAge","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"FeH","name":"FeH","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"modulus","name":"modulus","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"absorption","name":"absorption","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"logPost","name":"logPost","semanticType":"quantitative","analyticType":"measure","offset":0},{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
+            )
+        return {"pyg_html_str": pyg_html_str}, 200
+api.add_resource(myPygwalker, '/ocbexapi/myPygwalker')
 
 # Running app
 if __name__ == '__main__':

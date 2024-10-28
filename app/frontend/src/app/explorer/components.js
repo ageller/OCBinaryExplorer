@@ -58,6 +58,41 @@ function SideBar({buttons}){
     )
 }
 
+// component to get the HTML string from pygwalker and render it
+const PygwalkerComponent = () => {
+    const [htmlData, setHtmlData] = useState("");
+
+    useEffect(() => {
+        fetch('/ocbexapi/myPygwalker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => {
+                if (!response.ok) {
+                    // If response is not OK, throw an error to catch block
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                setHtmlData(data.html_data);
+            })
+            .catch(error => {
+                console.error('Error setting table data:', error);
+            });
+    }, []);
+
+    return (
+        <div style={{ marginTop: "40px" }}>
+            {/* Render HTML safely */}
+            <div dangerouslySetInnerHTML={{ __html: htmlData }} />
+        </div>
+    );
+};
+
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
     const {globalState, setShowExplorerDivAtIndex} = useContext(GlobalStateContext);
@@ -93,6 +128,7 @@ function ExplorerContainer({label, count}){
         xmax:'',
         ymin:'',
         ymax:'',
+        pygwalker_html_data:"",
     });
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
@@ -347,6 +383,32 @@ function ExplorerContainer({label, count}){
 
     }, [plotData.table_columns]);
 
+    useEffect(() => {
+        fetch('/ocbexapi/myPygwalker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(plotData),
+          })
+            .then(response => {
+                if (!response.ok) {
+                    // If response is not OK, throw an error to catch block
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                setPlotData((prevData) => ({
+                    ...prevData,
+                    pygwalker_html_data: data.pyg_html_str,
+                }))
+            })
+            .catch(error => {
+                console.error('Error setting table data:', error);
+            });
+    }, [plotData.table_data]);
+
     ////////////////////////////
     // function controlling the settings
     const toggleSettings = () => {
@@ -514,6 +576,18 @@ function ExplorerContainer({label, count}){
                         {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
                     </div>
                 )}
+                {label === 'free' && (
+                    <div className="settingsContainer">
+                        1. Select the cluster <br/>
+                        {renderDropdown(availableClusters.options, 'cluster')}
+                        <br/><br/>
+                        2. Select the data table <br/>
+                        {renderDropdown(availableTables.options, 'table')}
+                        <br/><br/>
+                        2. Select the columns that you would like to include in the interactive plotter <br/>
+                        {renderCheckboxGrid('table_columns')}
+                    </div>
+                )}
                 <br/><br/>
                 <div className = "button linkDiv" style = {{marginLeft:'10px'}}onClick={toggleSettings}>Done</div>
             </div>
@@ -563,6 +637,11 @@ function ExplorerContainer({label, count}){
                     height: divRef.current.clientHeight - 50
                 }))
             } else if (plotData.type === "table"){
+                setTableLayout((prevData) => ({
+                    ...prevData,
+                    maxHeight: (divRef.current.clientHeight - 250) + 'px'
+                }))
+            } else if (plotData.type === "free"){
                 setTableLayout((prevData) => ({
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
@@ -733,6 +812,23 @@ function ExplorerContainer({label, count}){
             }
         } 
 
+        // for free exploration, I will use pygwalker : https://github.com/Kanaries/pygwalker
+        if (plotData.type === "free"){
+            {
+
+                if (plotData.table_data.length > 0) {
+
+                    return (
+                        <div style= {{marginTop: "40px"}}>
+                            {/* Render HTML safely */}
+                            <div dangerouslySetInnerHTML={{ __html: plotData.pygwalker_html_data }} />
+                        </div>
+                    )
+                }
+            }
+        }
+
+
 
 
         return (
@@ -776,4 +872,7 @@ function ExplorerContainer({label, count}){
     )
 }
 
-export {SideBar, ExplorerContainer}
+
+
+
+export {SideBar, ExplorerContainer, PygwalkerComponent}
