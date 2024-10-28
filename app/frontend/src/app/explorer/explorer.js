@@ -32,7 +32,7 @@ export default function Explorer() {
                 icon: 'scatter_plot',
             }, 
             {
-                label: 'free',
+                label: 'explore',
                 icon: 'Dataset',
             }, 
 
