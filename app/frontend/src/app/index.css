@@ -73,8 +73,8 @@ html,body{
 	margin: 5px 0px 5px 5px;
 }
 .paperContent{
-    /* background-color: var(--light); */
 	color: var(--dark);
+    padding:10px;
 }
 .pageInset{
     position: relative;

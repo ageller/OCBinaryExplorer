@@ -226,8 +226,9 @@ function ExplorerEntryButton(){
 function ContributorPhoto({ index, name, link, image, title, affiliation, type }){
     // why do I need this -3px to avoid the white space (where is the white space coming from??)
     return( 
-        <div className="pageSideBySide" style={{ borderBottom: '1px solid gray', ...(index === 0 ? { borderTop: '1px solid gray' } : {marginTop: '-3px'}) }}>
-            <div className = "smallerChild" style = {{padding:'10px'}}>
+        // <div className="pageSideBySide" style={{ borderBottom: '1px solid gray', ...(index === 0 ? { borderTop: '1px solid gray' } : {marginTop: '-3px'}) }}>
+        <div className="pageSideBySide">
+        <div className = "smallerChild" style = {{padding:'10px'}}>
                 <div className = "insetLeft">
                     <a href = {link}>
                         <Image className = "profileImage" src = {image} height = {150} width = {150} alt = {name}/>
@@ -261,25 +262,27 @@ function Team({ contributors }){
     return(
         <>
             <div className = "headerSmall darkColor">Meet the Team</div>
-            {contributors.map((d, i) => (
-                d.type === 'undergrad' ? (
-                    <ContributorUndergrad key = {i} index={i} {...d}/>
-                ) : (
-                    <ContributorPhoto key = {i} index={i} {...d}/>
+            {/* <div className = "lightBackgroundColor"> */}
+                {contributors.map((d, i) => (
+                    d.type === 'undergrad' ? (
+                        <ContributorUndergrad key = {i} index={i} {...d}/>
+                    ) : (
+                        <ContributorPhoto key = {i} index={i} {...d}/>
 
-                )
-            ))}
+                    )
+                ))}'
+            {/* </div> */}
         </>
 
     )
 }
 
 
-function Paper({ content }){
+function Paper({ authors, title, bib, doi, link }){
 
     return( 
         <li className = "paperContent">
-            {content}
+            <em>"{title}"</em>, {authors}, {bib}, DOI: <a href = {link}>{doi} </a>
         </li>
     )
 }
@@ -287,8 +290,8 @@ function Papers({ papers }){
 
     return(
         <>
-            <div className = "headerSmall darkColor">Papers</div>
-            <ul>
+            <div className = "headerSmall darkColor ">Refereed Publications</div>
+            <ul className = "lightBackgroundColor">
                 {papers.map((d, i) => (
                     <Paper key = {i} {...d}/>
                 ))}
@@ -298,4 +301,25 @@ function Papers({ papers }){
 }
 
 
-export {ExplorerEntry, Team, Papers} 
+function Abstract({ authors, title, bib, link }){
+
+    return( 
+        <li className = "paperContent">
+            <em>"{title}"</em>, {authors}, {bib}, <a href = {link}>NASA ADS </a>
+            </li>
+    )
+}
+function Abstracts({ abstracts }){
+
+    return(
+        <>
+            <div className = "headerSmall darkColor">Conference Presentations</div>
+            <ul className = "lightBackgroundColor">
+                {abstracts.map((d, i) => (
+                    <Abstract key = {i} {...d}/>
+                ))}
+            </ul>
+        </>
+    )
+}
+export {ExplorerEntry, Team, Papers, Abstracts} 
