@@ -314,6 +314,7 @@ html,body{
 	font-size: 16px;
 	color:  var(--light);
     text-align: justify;
+    margin: 10px 16px 20px 16px;
 }
 /* links */
 a:link {

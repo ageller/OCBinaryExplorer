@@ -1,7 +1,7 @@
 'use client'
 
 import Head from 'next/head';
-import {ExplorerEntry, Team, Papers, Abstracts} from './components'
+import {ExplorerEntry, Team, Papers, Abstracts, DataAccess} from './components'
 import {HeaderTop, Footer} from './sharedComponents/misc'
 
 
@@ -160,6 +160,7 @@ export default function HomePage() {
                     <div style = {{height:"50px"}}></div>
                     <Papers {...paperProps}/>
                     <Abstracts {...abstractProps}/>
+                    <DataAccess />
                     <hr/>
 
 

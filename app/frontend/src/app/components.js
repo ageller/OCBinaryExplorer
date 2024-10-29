@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -6,12 +6,12 @@ import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 
-function ExplorerEntry(){
+function ExplorerEntry() {
     // include an animation (or better image) that will play when the page loads(TO DO)
     const [windowHeight, setWindowHeight] = useState(0);
     const [windowWidth, setWindowWidth] = useState(0);
     const [top0, setTop0] = useState(0);
-    const [sceneContainerStyle, setSceneContainerStyle] = useState({width:"100%", height: '500px'});
+    const [sceneContainerStyle, setSceneContainerStyle] = useState({ width: "100%", height: '500px' });
     const sceneContainerRef = useRef(null);
     const [availableClusters, setAvailableClusters] = useState([]);
 
@@ -21,7 +21,7 @@ function ExplorerEntry(){
             setWindowHeight(window.innerHeight);
             setWindowWidth(window.innerWidth);
             const topNavElement = document.querySelector('.topNav');
-            if (topNavElement){
+            if (topNavElement) {
                 setTop0(topNavElement.getBoundingClientRect().height);
             }
         }
@@ -30,7 +30,7 @@ function ExplorerEntry(){
 
         // Add event listener for window resize
         window.addEventListener('resize', handleResize);
-    
+
         // Cleanup the event listener on component unmount
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -44,7 +44,7 @@ function ExplorerEntry(){
             .then(data => {
                 let options = [];
                 data.clusters.forEach(d => {
-                    options.push({label: d.replaceAll('_',' '), value: d})
+                    options.push({ label: d.replaceAll('_', ' '), value: d })
                 });
                 setAvailableClusters(data.clusters);
             })
@@ -56,9 +56,9 @@ function ExplorerEntry(){
         const setupScene = () => {
             const width = window.innerWidth - 20; //for scroll bar
             const height = window.innerHeight - top0;
-            setSceneContainerStyle({width: width, height: height});
+            setSceneContainerStyle({ width: width, height: height });
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, width/height, 0.1, 1e5);
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1e5);
             camera.position.z = 0.1;
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
@@ -69,19 +69,19 @@ function ExplorerEntry(){
             return { scene, camera, controls, renderer };
         };
 
-    
+
         // Add points to the scene
         const addPoints = (scene, coordinates, color) => {
             const vertices = [];
             const sizes = [];
-            coordinates.forEach(({name, x, y, z, rh}) => {
-                if (!isNaN(x) & !isNaN(y) & !isNaN(z) & !isNaN(rh)){
+            coordinates.forEach(({ name, x, y, z, rh }) => {
+                if (!isNaN(x) & !isNaN(y) & !isNaN(z) & !isNaN(rh)) {
                     vertices.push(parseFloat(x), parseFloat(y), parseFloat(z));
-                    sizes.push(2.*parseFloat(rh));
+                    sizes.push(2. * parseFloat(rh));
                 }
             });
             const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             geometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(sizes), 1));
 
 
@@ -110,7 +110,7 @@ function ExplorerEntry(){
                         gl_FragColor = vec4(pointColor, 1. - dist);
                     }
                 `,
-                transparent: true, 
+                transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthTest: false
             });
@@ -121,12 +121,12 @@ function ExplorerEntry(){
 
         // Animate the scene
         const animateScene = (scene, renderer, camera, controls) => {
-          const animate = () => {
+            const animate = () => {
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
                 controls.update();
             };
-          animate();
+            animate();
         };
 
 
@@ -134,8 +134,8 @@ function ExplorerEntry(){
         const handleResizeWebGL = (renderer, camera) => {
             const width = window.innerWidth - 20; //for scroll bar
             const height = window.innerHeight - top0;
-            setSceneContainerStyle({width: width, height: height});
-            camera.aspect = width/height;
+            setSceneContainerStyle({ width: width, height: height });
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
         };
@@ -143,7 +143,7 @@ function ExplorerEntry(){
 
         // Resize event listener
         window.addEventListener('resize', () => handleResizeWebGL(renderer, camera));
-        
+
         // Clean up the scene
         const cleanupScene = (renderer) => {
             return () => {
@@ -152,7 +152,7 @@ function ExplorerEntry(){
 
             };
         };
-    
+
         const { scene, camera, controls, renderer } = setupScene();
 
         // Fetch and parse the CSV file
@@ -177,7 +177,7 @@ function ExplorerEntry(){
                     for (let j = 0; j < headers.length; j++) {
                         coordinate[headers[j]] = values[j];
                     }
-                    if (availableClusters.includes(values[0])){
+                    if (availableClusters.includes(values[0])) {
                         console.log('found available cluster', values[0]);
                         coordinatesAvail.push(coordinate);
                     } else {
@@ -188,33 +188,36 @@ function ExplorerEntry(){
                 const pointsOther = addPoints(scene, coordinatesOther, colorOther);
                 const pointsAvail = addPoints(scene, coordinatesAvail, colorAvail);
                 animateScene(scene, renderer, camera, controls);
-        });
+            });
 
         // Clean up the scene when the component is unmounted
         return cleanupScene(renderer);
-      }, [windowHeight, top0, availableClusters]);
+    }, [windowHeight, top0, availableClusters]);
 
-    return(
-        <div className = "division darkBackgroundColor" style = {{height: windowHeight - top0, position: "relative"}}>
-            <div className = "webGLContainer" ref = {sceneContainerRef}  style = {sceneContainerStyle}></div>
-            <div className = "content " id = "explainer" style = {{position:"absolute",  bottom:0, left:0}}>
-                <div className = "explainer">We use the Bayesian Analysis of Stellar Evolution with Nine Parameters <a href = "https://base-9.readthedocs.io/en/latest/" target = "blank">(BASE-9)</a> software suite along with Gaia kinematics and distances and photometry from Gaia, Pan-STARRS and 2MASS to characterise the binary-star populations in a collection of open clusters.  For information about our methods and results, please see the Papers section at the bottom of this page.  You can access these data by clicking on the button below.</div>
-                <div className = "explainerSmall" style = {{ margin: '10px 16px 20px 16px' }}>The interactive visualization above shows the open cluster population as seem from Earth, with the clusters in this study highlighted in pink.</div>
+    return (
+        <div className="division darkBackgroundColor" style={{ height: windowHeight - top0, position: "relative" }}>
+            <div className="webGLContainer" ref={sceneContainerRef} style={sceneContainerStyle}></div>
+            <div className="content " id="explainer" style={{ position: "absolute", bottom: 0, left: 0 }}>
+                <div id="explainerContainer" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
+                    <div className="explainer">This website provides public access to data products and visualization tools to explore results from our open cluster photometric binary research.  Click the button below to enter the data explorer.</div>
+                    <div className="explainerSmall">In short, the project uses the Bayesian Analysis of Stellar Evolution with Nine Parameters <a href="https://base-9.readthedocs.io/en/latest/" target="blank">(BASE-9)</a> software suite along with Gaia kinematics and distances and photometry from Gaia, Pan-STARRS and 2MASS to characterise the binary-star populations in a collection of open clusters.  For information about our methods and results, please see the Papers section at the bottom of this page.  You can access these data by clicking on the button below.</div>
+                    <div className="explainerSmall">The interactive visualization above shows the open cluster population as seen from Earth, with the clusters in this study highlighted in pink.</div>
+                </div>
                 <ExplorerEntryButton />
             </div>
-        </div> 
+        </div>
 
 
     )
 }
 
-function ExplorerEntryButton(){
-    return(
-        <Link href = "explorer">
-            <div className = "foregroundBackgroundColor linkDiv" style={{marginLeft:'16px'}}>
-                <div className = "content">
-                    <div className = "headerSmall bannerColor">Click here to enter the <i>Interactive Data Explorer</i> </div>
-                    <div className = "subheader darkColor" >View, filter, sort, create, edit, and download data and plots</div>
+function ExplorerEntryButton() {
+    return (
+        <Link href="explorer">
+            <div className="foregroundBackgroundColor linkDiv" style={{ marginLeft: '16px' }}>
+                <div className="content">
+                    <div className="headerSmall bannerColor">Click here to enter the <i>Interactive Data Explorer</i> </div>
+                    <div className="subheader darkColor" >View, filter, sort, create, edit, and download data and plots</div>
 
                 </div>
             </div>
@@ -223,54 +226,54 @@ function ExplorerEntryButton(){
 }
 
 
-function ContributorPhoto({ index, name, link, image, title, affiliation, type }){
+function ContributorPhoto({ index, name, link, image, title, affiliation, type }) {
     // why do I need this -3px to avoid the white space (where is the white space coming from??)
-    return( 
+    return (
         // <div className="pageSideBySide" style={{ borderBottom: '1px solid gray', ...(index === 0 ? { borderTop: '1px solid gray' } : {marginTop: '-3px'}) }}>
         <div className="pageSideBySide">
-        <div className = "smallerChild" style = {{padding:'10px'}}>
-                <div className = "insetLeft">
-                    <a href = {link}>
-                        <Image className = "profileImage" src = {image} height = {150} width = {150} alt = {name}/>
-                        </a>
+            <div className="smallerChild" style={{ padding: '10px' }}>
+                <div className="insetLeft">
+                    <a href={link}>
+                        <Image className="profileImage" src={image} height={150} width={150} alt={name} />
+                    </a>
                 </div>
             </div>
-            <div className = "child">
-                <div className = "insetRight centerV">
+            <div className="child">
+                <div className="insetRight centerV">
                     <p>
-                        <strong><a href = {link}>{name}</a></strong><br/>
-                        {title}<br/>
-                        {affiliation}<br/>
+                        <strong><a href={link}>{name}</a></strong><br />
+                        {title}<br />
+                        {affiliation}<br />
                     </p>
                 </div>
             </div>
         </div>
     )
 }
-function ContributorUndergrad({ index, name, link, image, title, affiliation, type }){
+function ContributorUndergrad({ index, name, link, image, title, affiliation, type }) {
     // why do I need this -3px to avoid the white space (where is the white space coming from??)
-    return( 
+    return (
         <div className="pageSideBySide" >
-            <div style = {{padding:'10px'}}>
+            <div style={{ padding: '10px' }}>
                 <strong>{name}</strong>, {title}, {affiliation}
             </div>
         </div>
     )
 }
-function Team({ contributors }){
+function Team({ contributors }) {
 
-    return(
+    return (
         <>
-            <div className = "headerSmall darkColor">Meet the Team</div>
+            <div className="headerSmall darkColor">Meet the Team</div>
             {/* <div className = "lightBackgroundColor"> */}
-                {contributors.map((d, i) => (
-                    d.type === 'undergrad' ? (
-                        <ContributorUndergrad key = {i} index={i} {...d}/>
-                    ) : (
-                        <ContributorPhoto key = {i} index={i} {...d}/>
+            {contributors.map((d, i) => (
+                d.type === 'undergrad' ? (
+                    <ContributorUndergrad key={i} index={i} {...d} />
+                ) : (
+                    <ContributorPhoto key={i} index={i} {...d} />
 
-                    )
-                ))}'
+                )
+            ))}'
             {/* </div> */}
         </>
 
@@ -278,22 +281,22 @@ function Team({ contributors }){
 }
 
 
-function Paper({ authors, title, bib, doi, link }){
+function Paper({ authors, title, bib, doi, link }) {
 
-    return( 
-        <li className = "paperContent">
-            <em>"{title}"</em>, {authors}, {bib}, DOI: <a href = {link}>{doi} </a>
+    return (
+        <li className="paperContent">
+            <em>"{title}"</em>, {authors}, {bib}, DOI: <a href={link}>{doi} </a>
         </li>
     )
 }
-function Papers({ papers }){
+function Papers({ papers }) {
 
-    return(
+    return (
         <>
-            <div className = "headerSmall darkColor ">Refereed Publications</div>
-            <ul className = "lightBackgroundColor">
+            <div className="headerSmall darkColor ">Refereed Publications</div>
+            <ul className="lightBackgroundColor">
                 {papers.map((d, i) => (
-                    <Paper key = {i} {...d}/>
+                    <Paper key={i} {...d} />
                 ))}
             </ul>
         </>
@@ -301,25 +304,36 @@ function Papers({ papers }){
 }
 
 
-function Abstract({ authors, title, bib, link }){
+function Abstract({ authors, title, bib, link }) {
 
-    return( 
-        <li className = "paperContent">
-            <em>"{title}"</em>, {authors}, {bib}, <a href = {link}>NASA ADS </a>
-            </li>
+    return (
+        <li className="paperContent">
+            <em>"{title}"</em>, {authors}, {bib}, <a href={link}>NASA ADS </a>
+        </li>
     )
 }
-function Abstracts({ abstracts }){
+function Abstracts({ abstracts }) {
 
-    return(
+    return (
         <>
-            <div className = "headerSmall darkColor">Conference Presentations</div>
-            <ul className = "lightBackgroundColor">
+            <div className="headerSmall darkColor">Conference Presentations</div>
+            <ul className="lightBackgroundColor">
                 {abstracts.map((d, i) => (
-                    <Abstract key = {i} {...d}/>
+                    <Abstract key={i} {...d} />
                 ))}
             </ul>
         </>
     )
 }
-export {ExplorerEntry, Team, Papers, Abstracts} 
+function DataAccess() {
+
+    return (
+        <>
+            <div className="headerSmall darkColor">Data Access</div>
+            <div className="lightBackgroundColor darkColor"  style={{ padding: '10px' }}>
+                Data used in this study are available on <a href="https://zenodo.org/records/10080762">Zenodo here</a>.
+            </div>
+        </>
+    )
+}
+export { ExplorerEntry, Team, Papers, Abstracts, DataAccess } 
