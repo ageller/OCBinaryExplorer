@@ -28,6 +28,14 @@ def get_available_clusters():
         if os.path.isfile(os.path.join(data_dir, item)) and '.db' in item:
             clusters.append(str.replace(item, '.db',''))
 
+    # Sort the list alphabetically
+    clusters.sort()
+
+    # Create a new list with priority items first
+    # priority_items = ["hdbscan_cluster_params", "cluster_summary"]
+    # clusters_sorted = [item for item in priority_items if item in clusters] + \
+    #                   [item for item in clusters if item not in priority_items]
+
     return clusters
 
 def get_available_tables(cursor):
