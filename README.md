@@ -13,7 +13,7 @@ This file contains one table : `HDBSCAN_parameters`, with the following columns:
 - `Radius` : radius, in degrees, from the cluster center over which we perform the initial HDBSCAN search
 - `Min_size` : minimum cluster size for HDBSCAN
 - `Group` : cluster number that corresponds to the open cluster
-- `no_points` : number of points found in the group
+- `no_points` : number of points found in the cluster
 
 ### `cluster_summary.db` : the summary database
 
