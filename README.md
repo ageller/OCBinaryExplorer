@@ -3,7 +3,7 @@ A website to explore results from the BASE-9 Open Cluster project
 
 ## Explanation of the data
 
-Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `sqlite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table. 
+Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `SQLite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table. 
 
 ### `cluster_summary.db` : the summary database
 
