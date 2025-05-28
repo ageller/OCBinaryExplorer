@@ -8,6 +8,7 @@
 	/* --foreground:#2CB59C; */
 	--light:#EBEBEB;
 	--dark:#292929;
+	--medium:#848484;
 	--link:#FC6471;
 	--banner:#3066BE;
     --lightInstructions:lightgrey;
@@ -74,7 +75,7 @@ html,body{
 }
 .paperContent{
 	color: var(--dark);
-    padding:10px;
+    margin-top: 20px;
 }
 .pageInset{
     position: relative;
@@ -90,7 +91,7 @@ html,body{
 .content{
 	display: inline-block;
 	box-sizing: border-box;
-	padding: 10px;
+	/* padding: 10px; */
 }
 
 .division{
@@ -255,7 +256,9 @@ html,body{
 .lightColor{
 	color:  var(--light) !important;
 }
-
+.mediumColor{
+	color:  var(--medium) !important;
+}
 
 
 .profileImage{
@@ -314,7 +317,7 @@ html,body{
 	font-size: 16px;
 	color:  var(--light);
     text-align: justify;
-    margin: 10px 16px 20px 16px;
+    margin: 10px 0px 20px 0px;
 }
 /* links */
 a:link {
@@ -331,6 +334,9 @@ a:active {
 	color: var(--link);
 }
 
+.footer{
+    padding:10px;
+}
 .footer a:link {
 	color: var(--dark);
 }
@@ -344,7 +350,13 @@ a:active {
 .footer a:active {
 	color: var(--dark);
 }
-
+#homeHeader a{
+    color: var(--medium);
+    text-decoration: none;
+}
+#homeHeader a:hover{
+    text-decoration: underline;
+}
 .explorerInstructions a:link {
     color:var(--lightInstructions);
 }
@@ -403,6 +415,9 @@ a:active {
 .canvas{
     width:100%;
     height:100%;
+}
+.webGLContainer canvas{
+    border-radius:50%;
 }
 
 .hidden{

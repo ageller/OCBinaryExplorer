@@ -1,7 +1,7 @@
 'use client'
 
 import Head from 'next/head';
-import {ExplorerEntry, Team, Papers, Abstracts, DataAccess} from './components'
+import {ExplorerEntry, Team, Papers, Abstracts, DataAccess, HeaderLinks, AboutSection} from './components'
 import {HeaderTop, Footer} from './sharedComponents/misc'
 
 
@@ -152,17 +152,24 @@ export default function HomePage() {
             <Head>
                 <title>OC Binary Explorer</title>
             </Head>
-            <HeaderTop {...headerProps} />
+            {/* <HeaderTop {...headerProps} /> */}
+            <HeaderLinks />
             <ExplorerEntry />
             <div className = "division lightColor" id = "creditDiv">
                 <div className = "content" style = {{minHeight:'700px', width:'100%"'}}>
+                    <AboutSection />
                     <Team {...teamProps}/>
                     <div style = {{height:"50px"}}></div>
-                    <Papers {...paperProps}/>
-                    <Abstracts {...abstractProps}/>
+                    <div id="publications" style={{width:"100%", display:"flex", flexDirection:"row"}}>
+                        <div style={{ width:"50%"}}>
+                            <Papers {...paperProps}/>
+                            </div>
+                        <div style={{ width:"50%"}}>    
+                            <Abstracts {...abstractProps}/>
+                        </div>
+                    </div>
                     <DataAccess />
-                    <hr/>
-
+                    <div style= {{marginTop:"20px"}}></div>
 
                 </div>
             </div>

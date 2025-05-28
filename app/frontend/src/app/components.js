@@ -5,13 +5,28 @@ import Image from 'next/image';
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
+function HeaderLinks() {
+
+    return (
+        <>
+            <div id="homeHeader" className="lightBackgroundColor mediumColor headerSmall topNav">
+                <div style={{padding:'10px', fontSize: '30px', display:'flex', flexDirection: 'row' }}>
+                    <div style={{ marginRight: '20px'}}><a href="#aboutHeader">About</a></div>
+                    <div style={{ marginRight: '20px'}}><a href="#teamHeader">Team</a></div>
+                    <div style={{ marginRight: '20px'}}><a href="#papersHeader">Publications</a></div>
+                    <div style={{ marginRight: '20px'}}><a href="#dataHeader">Data</a></div>
+                </div>
+            </div>
+        </>
+    )
+}
 
 function ExplorerEntry() {
     // include an animation (or better image) that will play when the page loads(TO DO)
     const [windowHeight, setWindowHeight] = useState(0);
     const [windowWidth, setWindowWidth] = useState(0);
     const [top0, setTop0] = useState(0);
-    const [sceneContainerStyle, setSceneContainerStyle] = useState({ width: "100%", height: '500px' });
+    const [sceneContainerStyle, setSceneContainerStyle] = useState({ width: "50%", height: '500px' });
     const sceneContainerRef = useRef(null);
     const [availableClusters, setAvailableClusters] = useState([]);
 
@@ -54,9 +69,11 @@ function ExplorerEntry() {
         // Set up the Three.js scene
         // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
         const setupScene = () => {
-            const width = window.innerWidth - 20; //for scroll bar
-            const height = window.innerHeight - top0;
-            setSceneContainerStyle({ width: width, height: height });
+            var width = window.innerWidth/2. - 20; //for scroll bar
+            var height = window.innerHeight - 2.*top0;
+            const sze = Math.min(width, height);
+            width = height = sze;
+            setSceneContainerStyle({ paddingTop:"10px", width: width, height: height });
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1e5);
             camera.position.z = 0.1;
@@ -132,9 +149,11 @@ function ExplorerEntry() {
 
         // Handle window resize event
         const handleResizeWebGL = (renderer, camera) => {
-            const width = window.innerWidth - 20; //for scroll bar
-            const height = window.innerHeight - top0;
-            setSceneContainerStyle({ width: width, height: height });
+            var width = window.innerWidth/2. - 20; //for scroll bar
+            var height = window.innerHeight - 2.*top0;
+            const sze = Math.min(width, height);
+            width = height = sze;
+            setSceneContainerStyle({ paddingTop:"10px", width: width, height: height });
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
@@ -195,30 +214,43 @@ function ExplorerEntry() {
     }, [windowHeight, top0, availableClusters]);
 
     return (
-        <div className="division darkBackgroundColor" style={{ height: windowHeight - top0, position: "relative" }}>
-            <div className="webGLContainer" ref={sceneContainerRef} style={sceneContainerStyle}></div>
-            <div className="content " id="explainer" style={{ position: "absolute", bottom: 0, left: 0 }}>
-                <div id="explainerContainer" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
-                    <div className="explainer">This website provides public access to data products and visualization tools to explore results from our open cluster photometric binary research.  Click the button below to enter the data explorer.</div>
-                    <div className="explainerSmall">In short, the project uses the Bayesian Analysis of Stellar Evolution with Nine Parameters <a href="https://base-9.readthedocs.io/en/latest/" target="blank">(BASE-9)</a> software suite along with Gaia kinematics and distances and photometry from Gaia, Pan-STARRS and 2MASS to characterise the binary-star populations in a collection of open clusters.  For information about our methods and results, please see the Papers section at the bottom of this page.  You can access these data by clicking on the button below.</div>
-                    <div className="explainerSmall">The interactive visualization above shows the open cluster population as seen from Earth, with the clusters in this study highlighted in pink.</div>
+        <div>
+            <div className="division lightBackgroundColor" style={{ height: windowHeight - top0, position: "relative" }}>
+                <div id="entry" style={{width:"100%", display:"flex", flexDirection:"row", alignItems: "center"}}>
+                    <div className="content " id="explainer" style={{ paddingLeft: "40px", paddingRight:"40px", width:"50%"}}>
+                        <div className="header bannerColor">Open Cluster Binary Explorer</div>
+                        <div className="explainer darkColor">Access photometric binary-star data in a collection of open clusters</div>
+                        <div className="explainerSmall darkColor">Click the button below to enter.  Scroll down for additional information about the project.</div>
+                        <ExplorerEntryButton />
+                    </div>
+                        <div className="webGLContainer" ref={sceneContainerRef} style={sceneContainerStyle}></div>
                 </div>
-                <ExplorerEntryButton />
             </div>
         </div>
+    )
+}
 
-
+function AboutSection(){
+    return (
+        <div style={{ padding: "10px"}}>
+            <div id="aboutHeader" className="headerSmall darkColor">About this website</div>
+            <div id="aboutContainer" style={{ marginTop: "20px", marginBottom: "40px" }}>
+                <div className="darkColor">
+                    <p>This website provides public access to data products and visualization tools to explore results from our open cluster photometric binary research.  Click the "Enter" button above to enter the interactive data explorer.  The interactive sky view on the right above shows the open cluster population as seen from Earth, with the clusters in this study highlighted in pink.   </p>  
+                    <p>This project uses the Bayesian Analysis of Stellar Evolution with Nine Parameters <a href="https://base-9.readthedocs.io/en/latest/" target="blank">(BASE-9)</a> software suite along with Gaia kinematics and distances and photometry from Gaia, Pan-STARRS and 2MASS to characterise the binary-star populations in a collection of open clusters.   For more information, please see our publications below and the link to our archived dataset on Zenodo, which explain our analysis methods and data products in more detail.</p>
+                </div>
+            </div>
+            {/* An NSF-funded research project from PI <a href="https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller.</a> */}
+        </div>
     )
 }
 
 function ExplorerEntryButton() {
     return (
         <Link href="explorer">
-            <div className="foregroundBackgroundColor linkDiv" style={{ marginLeft: '16px' }}>
+            <div className="foregroundBackgroundColor linkDiv" style={{ marginTop:'16px', width:'140px', padding:'12px', borderRadius:'40px', textAlign:'center' }}>
                 <div className="content">
-                    <div className="headerSmall bannerColor">Click here to enter the <i>Interactive Data Explorer</i> </div>
-                    <div className="subheader darkColor" >View, filter, sort, create, edit, and download data and plots</div>
-
+                    <div className="headerSmall bannerColor"><i>Enter</i> </div>
                 </div>
             </div>
         </Link>
@@ -230,23 +262,26 @@ function ContributorPhoto({ index, name, link, image, title, affiliation, type }
     // why do I need this -3px to avoid the white space (where is the white space coming from??)
     return (
         // <div className="pageSideBySide" style={{ borderBottom: '1px solid gray', ...(index === 0 ? { borderTop: '1px solid gray' } : {marginTop: '-3px'}) }}>
-        <div className="pageSideBySide">
-            <div className="smallerChild" style={{ padding: '10px' }}>
-                <div className="insetLeft">
-                    <a href={link}>
-                        <Image className="profileImage" src={image} height={150} width={150} alt={name} />
-                    </a>
+        <div>
+            <div className="pageSideBySide">
+                <div className="smallerChild" style={{ padding: '10px' }}>
+                    <div className="insetLeft">
+                        <a href={link}>
+                            <Image className="profileImage" src={image} height={150} width={150} alt={name} />
+                        </a>
+                    </div>
+                </div>
+                <div className="child">
+                    <div className="insetRight centerV">
+                        <p>
+                            <strong><a href={link}>{name}</a></strong><br />
+                            {title}<br />
+                            {affiliation}<br />
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div className="child">
-                <div className="insetRight centerV">
-                    <p>
-                        <strong><a href={link}>{name}</a></strong><br />
-                        {title}<br />
-                        {affiliation}<br />
-                    </p>
-                </div>
-            </div>
+            <hr style= {{marginLeft:"20px", marginRight:"20px"}}/>
         </div>
     )
 }
@@ -263,8 +298,8 @@ function ContributorUndergrad({ index, name, link, image, title, affiliation, ty
 function Team({ contributors }) {
 
     return (
-        <>
-            <div className="headerSmall darkColor">Meet the Team</div>
+        <div className="lightBackgroundColor">
+            <div id = "teamHeader" className="headerSmall darkColor" style={{ padding: "10px"}}>Meet the Team</div>
             {/* <div className = "lightBackgroundColor"> */}
             {contributors.map((d, i) => (
                 d.type === 'undergrad' ? (
@@ -275,7 +310,7 @@ function Team({ contributors }) {
                 )
             ))}'
             {/* </div> */}
-        </>
+        </div>
 
     )
 }
@@ -284,22 +319,22 @@ function Team({ contributors }) {
 function Paper({ authors, title, bib, doi, link }) {
 
     return (
-        <li className="paperContent">
+        <div className="paperContent">
             <em>"{title}"</em>, {authors}, {bib}, DOI: <a href={link}>{doi} </a>
-        </li>
+        </div>
     )
 }
 function Papers({ papers }) {
 
     return (
-        <>
-            <div className="headerSmall darkColor ">Refereed Publications</div>
-            <ul className="lightBackgroundColor">
+        <div style={{ padding: "10px"}}>
+            <div id="papersHeader" className="headerSmall darkColor ">Refereed Publications</div>
+            <div>
                 {papers.map((d, i) => (
                     <Paper key={i} {...d} />
                 ))}
-            </ul>
-        </>
+            </div>
+        </div>
     )
 }
 
@@ -307,33 +342,33 @@ function Papers({ papers }) {
 function Abstract({ authors, title, bib, link }) {
 
     return (
-        <li className="paperContent">
+        <div className="paperContent">
             <em>"{title}"</em>, {authors}, {bib}, <a href={link}>NASA ADS </a>
-        </li>
+        </div>
     )
 }
 function Abstracts({ abstracts }) {
 
     return (
-        <>
+        <div style={{ padding: "10px"}}>
             <div className="headerSmall darkColor">Conference Presentations</div>
-            <ul className="lightBackgroundColor">
+            <div>
                 {abstracts.map((d, i) => (
                     <Abstract key={i} {...d} />
                 ))}
-            </ul>
-        </>
+            </div>
+        </div>
     )
 }
 function DataAccess() {
 
     return (
-        <>
-            <div className="headerSmall darkColor">Data Access</div>
-            <div className="lightBackgroundColor darkColor"  style={{ padding: '10px' }}>
+        <div className="lightBackgroundColor" style={{ padding: "10px", marginTop:"40px", paddingBottom:"40px"}}>
+            <div id="dataHeader" className="headerSmall darkColor">Data Access</div>
+            <div className="darkColor"  style={{ paddingTop: '10px' }}>
                 Data used in this study are available on <a href="https://zenodo.org/records/10080762">Zenodo here</a>.
             </div>
-        </>
+        </div>
     )
 }
-export { ExplorerEntry, Team, Papers, Abstracts, DataAccess } 
+export { ExplorerEntry, Team, Papers, Abstracts, DataAccess, HeaderLinks, AboutSection } 
