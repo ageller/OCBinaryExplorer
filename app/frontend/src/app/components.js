@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FaGithub } from 'react-icons/fa';
 
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
@@ -15,6 +16,7 @@ function HeaderLinks() {
                     <div style={{ marginRight: '20px'}}><a href="#teamHeader">Team</a></div>
                     <div style={{ marginRight: '20px'}}><a href="#papersHeader">Publications</a></div>
                     <div style={{ marginRight: '20px'}}><a href="#dataHeader">Data</a></div>
+                    <div style={{ marginLeft: 'auto'}}><a href="https://github.com/ageller/OCBinaryExplorer" target="_blank" className="ml-auto text-xl"><FaGithub /></a></div>
                 </div>
             </div>
         </>
