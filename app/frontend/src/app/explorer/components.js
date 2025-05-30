@@ -158,6 +158,8 @@ function ExplorerContainer({label, count}){
         xmax:'',
         ymin:'',
         ymax:'',
+        cmin:'',
+        cmax:'',
         pygwalker_html_data:"",
         x_log10:'',
         y_log10:''
@@ -660,13 +662,16 @@ function ExplorerContainer({label, count}){
                         5. (Optional) Select a column for the point color <br/>
                         {renderDropdown([{label:"None", value:"None"}].concat(availableColumns.options), 'color_column')}
                         <br/><br/>
-                        6. (Optional) Set the x-axis range <br/>
+                        6. (Optional) Set the colormap (data) range <br/>
+                        {renderTextInput('cmin')}&nbsp;{renderTextInput('cmax')}
+                        <br/><br/>
+                        7. (Optional) Set the x-axis range <br/>
                         {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
                         <br/><br/>
-                        7. (Optional) Set the y-axis range <br/>
+                        8. (Optional) Set the y-axis range <br/>
                         {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
                         <br/><br/>
-                        8. (Optional) Check boxes below to use a log scale for the axes. <br/>
+                        9. (Optional) Check boxes below to use a log scale for the axes. <br/>
                         {renderCheckbox('x_log10')}
                         {renderCheckbox('y_log10')}
                     </div>
@@ -842,8 +847,11 @@ function ExplorerContainer({label, count}){
                             thickness:10,
                             title: plotData.color_column,
                         },
+                        cmin: plotData.cmin === "" ? Math.min(...plotData.color) : parseFloat(plotData.cmin),
+                        cmax: plotData.cmax === "" ? Math.max(...plotData.color) : parseFloat(plotData.cmax),
                         showscale: true,
                     }
+                    dataUse[0].hovertemplate = `<b>${xtitle}:</b> %{x}<br><b>${plotData.y_column}:</b> %{y}<br><b>${plotData.color_column}:</b> %{marker.color}<extra></extra>` 
                 }
                 if (dataUse[0].x.length > 0 && dataUse[0].y.length > 0 ) plotDefined = true;
             }
