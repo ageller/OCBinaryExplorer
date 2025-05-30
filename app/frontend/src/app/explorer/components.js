@@ -40,7 +40,7 @@ function SideBarButton({label, icon, style}){
 function SideBarHomeButton({label, icon, style}){
 
     return( 
-        <Link href = "/">
+        <Link href = "/" style={{textDecoration:"none"}}>
             <div key = {label} className = "halfbutton linkDiv"  style = {style}>
                 <div className = "material-symbols-outlined icon">{icon}</div>
             </div>
@@ -78,12 +78,14 @@ const SideBar = React.forwardRef(({buttons, onHelpClick, headerRef}, ref) => {
                     <SideBarButton key = {index} {...data}/>
                 ))}
             </div>
-            <div style = {{display:'flex', flexDirection:'row'}}>
-                <div style= {{width:"50%"}}>
-                    <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px", left:"0px"}}/>
-                </div>
-                <div >
-                    <SideBarFunctionButton label = "help" icon = "question_mark" style={{position:"absolute", bottom:"0px", left:"50px"}} onClick = {onHelpClick} />
+            <div style={{position:'absolute', bottom:0, left:0}}>
+                <div style = {{display:'flex', flexDirection:'row'}}>
+                    <div style= {{width:"50%"}}>
+                        <SideBarHomeButton label = "home" icon = "home" />
+                    </div>
+                    <div >
+                        <SideBarFunctionButton label = "help" icon = "question_mark" onClick = {onHelpClick} />
+                    </div>
                 </div>
             </div>
         </div>
