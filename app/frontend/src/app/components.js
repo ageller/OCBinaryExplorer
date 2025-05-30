@@ -5,6 +5,7 @@ import { FaGithub } from 'react-icons/fa';
 
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { CollectionsOutlined } from '@mui/icons-material';
 
 function HeaderLinks() {
 
@@ -16,7 +17,7 @@ function HeaderLinks() {
                     <div style={{ marginRight: '20px'}}><a href="#teamHeader">Team</a></div>
                     <div style={{ marginRight: '20px'}}><a href="#papersHeader">Publications</a></div>
                     <div style={{ marginRight: '20px'}}><a href="#dataHeader">Data</a></div>
-                    <div style={{ marginLeft: 'auto'}}><a href="https://github.com/ageller/OCBinaryExplorer" target="_blank" className="ml-auto text-xl"><FaGithub /></a></div>
+                    <div style={{ marginLeft: 'auto'}}><a href="https://github.com/ageller/OCBinaryExplorer" className="ml-auto text-xl"><FaGithub /></a></div>
                 </div>
             </div>
         </>
@@ -69,6 +70,20 @@ function ExplorerEntry() {
     }, []);
 
     useEffect(() => {
+
+        // check that the scenConterRef is defined
+        if (!sceneContainerRef.current) {
+            console.log("sceneContainerRef is null at scene setup — delaying...");
+            return;
+        }
+        // check if the data is availablel
+        if (availableClusters.length == 0) {
+            console.log("cluster data is not yet available — delaying...");
+            return;
+        }
+
+        const container = sceneContainerRef.current;
+
         // Set up the Three.js scene
         // would be cool to add bloom to this: https://threejs.org/examples/webgl_postprocessing_unreal_bloom.html
         const setupScene = () => {
@@ -82,7 +97,8 @@ function ExplorerEntry() {
             camera.position.z = 0.1;
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
-            sceneContainerRef.current.appendChild(renderer.domElement);
+
+            container.appendChild(renderer.domElement);
             const controls = new TrackballControls(camera, renderer.domElement);
             controls.noZoom = true;
             controls.noPan = true;
@@ -191,14 +207,21 @@ function ExplorerEntry() {
         // Clean up the scene
         const cleanupScene = (renderer) => {
             return () => {
+                console.log("Cleaning up scene", container);
                 controls.dispose();
                 renderer.domElement.removeEventListener("mousedown", handleInteractionStart);
                 renderer.domElement.removeEventListener("touchstart", handleInteractionStart);
-                if (sceneContainerRef.current) sceneContainerRef.current.removeChild(renderer.domElement);
                 window.removeEventListener('resize', handleResizeWebGL);
                 window.removeEventListener("mouseup", handleInteractionEnd);
                 window.removeEventListener("touchend", handleInteractionEnd);
 
+                // Remove canvas if it exists
+                if (container && renderer.domElement.parentNode === container) {
+                    container.removeChild(renderer.domElement);
+                    console.log('removed canvas from DOM')
+                }
+
+                renderer.dispose();
             };
         };
 

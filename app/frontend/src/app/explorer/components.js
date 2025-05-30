@@ -81,18 +81,23 @@ export default function HelpModal({ show, onClose, content }) {
         <div className="helpModalContainer">
             {/* Background overlay */}
 
-            {/* Modal content */}
-            <div className="helpModalContent">
-                <SideBarFunctionButton label = "close" icon = "close" style={{position:"absolute", top:"0px"}} onClick = {onClose} />
-                <h2 style= {{margin:"0px 60px"}}>Instructions</h2>
-                <p>Please use the buttons on the left to create containers for tables, histograms, scatter plots, or to explore the data through an instance of <Link href = "https://github.com/Kanaries/pygwalker">PyGwalker</Link>.</p>
-                <p>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.</p>
-                <p>You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</p>
-                <p>Information about the columns in all the tables can be found on <Link href = "https://github.com/ageller/OCBinaryExplorer">the README.md file in our GitHub repo.</Link>  The data used here is also available for direct download on <Link href = "https://zenodo.org/records/10080762">Zenodo here.</Link></p>
-                <p>Please report any bugs or feature requests to the Issues page on <Link href = "https://github.com/ageller/OCBinaryExplorer">our GitHub repo.</Link></p>
-                <br/><br/>
-                <div className="mediumColor" style={{fontStyle:"italic"}}>
-                    <Disclaimer />
+            <div className="helpModalWrapper">
+                {/* to allow for rounded corners when scroll included */}
+                <SideBarFunctionButton label = "close" icon = "close" style={{position:"absolute"}} onClick = {onClose} />
+                <div className="header bannerColor" style= {{margin:"0px 60px"}}> Instructions</div>
+
+                <div className="helpModalContent">
+                    {/* Modal content */}
+
+                    <p>Use the buttons on the left to create containers for tables, histograms, scatter plots, or to explore the data through an instance of <Link href = "https://github.com/Kanaries/pygwalker">PyGwalker</Link>.</p>
+                    <p>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.</p>
+                    <p>You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</p>
+                    <p>Information about the columns in all the tables can be found on <Link href = "https://github.com/ageller/OCBinaryExplorer">the README.md file in our GitHub repo.</Link>  The data used here is also available for direct download on <Link href = "https://zenodo.org/records/10080762">Zenodo here.</Link></p>
+                    <p>Please report any bugs or feature requests to the Issues page on <Link href = "https://github.com/ageller/OCBinaryExplorer">our GitHub repo.</Link></p>
+                    <br/><br/>
+                    <div className="mediumColor" style={{fontStyle:"italic"}}>
+                        <Disclaimer />
+                    </div>
                 </div>
             </div>
         </div>
