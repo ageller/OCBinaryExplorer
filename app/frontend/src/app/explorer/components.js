@@ -110,7 +110,7 @@ export default function HelpModal({ show, onClose, content }) {
                     <p>Use the buttons on the left to create containers for tables, histograms, scatter plots, or to explore the data through an instance of <Link href = "https://github.com/Kanaries/pygwalker">PyGwalker</Link>.</p>
                     <p>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.</p>
                     <p>You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</p>
-                    <p>Information about the columns in all the tables can be found on <Link href = "https://github.com/ageller/OCBinaryExplorer">the README.md file in our GitHub repo.</Link>  The data used here is also available for direct download on <Link href = "https://zenodo.org/records/10080762">Zenodo here.</Link></p>
+                    <p>Information about the columns in all the tables can be found on the README.md file in <Link href = "https://github.com/ageller/OCBinaryExplorer">our GitHub repo.</Link>  The data used here is also available for direct download on <Link href = "https://zenodo.org/records/10080762">Zenodo here.</Link></p>
                     <p>Please report any bugs or feature requests to the Issues page on <Link href = "https://github.com/ageller/OCBinaryExplorer">our GitHub repo.</Link></p>
                     <br/><br/>
                     <div className="mediumColor" style={{fontStyle:"italic"}}>
@@ -654,11 +654,13 @@ function ExplorerContainer({label, count}){
     // Function to update the Plotly layout with the current div size
     const updateVisualizationLayout = () => {
         if (divRef.current) {
+            const xtitle = (plotData.x2_column === "" | plotData.x2_column === "None") ? plotData.x_column : plotData.x_column + " - " + plotData.x2_column
+
             if (plotData.type === "histogram"){
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
                     xaxis: {
-                        title: (plotData.x2_column === "" | plotData.x2_column === "None") ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column, 
+                        title: xtitle,
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
@@ -677,10 +679,11 @@ function ExplorerContainer({label, count}){
                     margin: {l: 60, r: 10, b: 40, t: 80}
                 }))
             } else if (plotData.type === "scatter"){
+
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
                     xaxis: {
-                        title: (plotData.x2_column === "" | plotData.x2_column === "None") ? plotData.x_column : plotData.x_column + "-" + plotData.x2_column, 
+                        title: xtitle,
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
@@ -765,6 +768,8 @@ function ExplorerContainer({label, count}){
     const visualizeData = () => {
         var dataUse;
         let plotDefined = false;
+        const xtitle = (plotData.x2_column === "" | plotData.x2_column === "None") ? plotData.x_column : plotData.x_column + " - " + plotData.x2_column
+
 
         // for histogram and scatter I will use plotly
         if (plotData.type === "histogram" || plotData.type === "scatter"){
@@ -772,7 +777,8 @@ function ExplorerContainer({label, count}){
                 dataUse = [{
                     x: plotData.x,
                     type: plotData.type,
-                    nbinsx : plotData.nbinsx
+                    nbinsx : plotData.nbinsx,
+                    hovertemplate: `<b>${xtitle}:</b> %{x}<br><b>N:</b> %{y}<extra></extra>`
                 },];
                 if (dataUse[0].x.length > 0) plotDefined = true;
             } else if (plotData.type === "scatter"){
@@ -781,6 +787,7 @@ function ExplorerContainer({label, count}){
                     y: plotData.y,
                     type: plotData.type,
                     mode: plotData.mode,
+                    hovertemplate: `<b>${xtitle}:</b> %{x}<br><b>${plotData.y_column}:</b> %{y}<extra></extra>`
                 },]; 
                 if (plotData.color_column != "" && plotData.color.length === plotData.x.length){
                     dataUse[0].marker = {
