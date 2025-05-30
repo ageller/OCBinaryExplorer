@@ -29,6 +29,7 @@ function ExplorerEntry() {
     const [sceneContainerStyle, setSceneContainerStyle] = useState({ width: "50%", height: '500px' });
     const sceneContainerRef = useRef(null);
     const [availableClusters, setAvailableClusters] = useState([]);
+    const isInteracting = useRef(false);
 
     // Function to handle window resize event
     useEffect(() => {
@@ -75,7 +76,7 @@ function ExplorerEntry() {
             width = height = sze;
             setSceneContainerStyle({ paddingTop:"10px", width: width, height: height });
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1e5);
+            const camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 1e5);
             camera.position.z = 0.1;
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
@@ -83,9 +84,25 @@ function ExplorerEntry() {
             const controls = new TrackballControls(camera, renderer.domElement);
             controls.noZoom = true;
             controls.noPan = true;
+
+
+            // detect user interaction (so that I can stop the auto-rotate)
+            controls.addEventListener("start", handleInteractionStart);
+            controls.addEventListener("end", handleInteractionEnd);
+            renderer.domElement.addEventListener("mousedown", handleInteractionStart);
+            renderer.domElement.addEventListener("touchstart", handleInteractionStart);
+            window.addEventListener("mouseup", handleInteractionEnd);
+            window.addEventListener("touchend", handleInteractionEnd);
             return { scene, camera, controls, renderer };
         };
 
+        // for detecting user interaction
+        const handleInteractionStart = () => {
+            isInteracting.value = true;
+        };
+        const handleInteractionEnd = () => {
+            isInteracting.value = false;
+        };
 
         // Add points to the scene
         const addPoints = (scene, coordinates, color) => {
@@ -140,8 +157,14 @@ function ExplorerEntry() {
         const animateScene = (scene, renderer, camera, controls) => {
             const animate = () => {
                 requestAnimationFrame(animate);
-                renderer.render(scene, camera);
+                if (!isInteracting.value) {
+                    // Rotate
+                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.001);
+                    camera.lookAt(scene.position);
+                }
+
                 controls.update();
+                renderer.render(scene, camera);
             };
             animate();
         };
@@ -166,8 +189,13 @@ function ExplorerEntry() {
         // Clean up the scene
         const cleanupScene = (renderer) => {
             return () => {
+                controls.dispose();
+                renderer.domElement.removeEventListener("mousedown", handleInteractionStart);
+                renderer.domElement.removeEventListener("touchstart", handleInteractionStart);
                 if (sceneContainerRef.current) sceneContainerRef.current.removeChild(renderer.domElement);
                 window.removeEventListener('resize', handleResizeWebGL);
+                window.removeEventListener("mouseup", handleInteractionEnd);
+                window.removeEventListener("touchend", handleInteractionEnd);
 
             };
         };
