@@ -182,6 +182,7 @@ api.add_resource(setTableData, '/ocbexapi/setTableData')
 class myPygwalker(Resource):
     # create the pyGwalker data explorer
     # I created a plot that had configs I liked, and copied that config line below
+    # note that this requires pygwalker version 0.4.9.11
     def post(self):
         data = request.json
         pyg_html_str = "Attempting to create PyGwalker instance..."

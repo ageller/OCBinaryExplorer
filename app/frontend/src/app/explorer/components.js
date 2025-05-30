@@ -105,40 +105,41 @@ export default function HelpModal({ show, onClose, content }) {
 }
 
 
-// component to get the HTML string from pygwalker and render it
-const PygwalkerComponent = () => {
-    const [htmlData, setHtmlData] = useState("");
+// // component to get the HTML string from pygwalker and render it
+// const PygwalkerComponent = () => {
+//     const [htmlData, setHtmlData] = useState("");
 
-    useEffect(() => {
-        fetch('/ocbexapi/myPygwalker', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(plotData),
-          })
-            .then(response => {
-                if (!response.ok) {
-                    // If response is not OK, throw an error to catch block
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                setHtmlData(data.html_data);
-            })
-            .catch(error => {
-                console.error('Error setting table data:', error);
-            });
-    }, []);
+//     useEffect(() => {
+//         fetch('/ocbexapi/myPygwalker', {
+//             method: 'POST',
+//             headers: {
+//               'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(plotData),
+//           })
+//             .then(response => {
+//                 if (!response.ok) {
+//                     // If response is not OK, throw an error to catch block
+//                     console.log('encountered an error in pygwalker component: status=', response.status);
+//                     throw new Error(`HTTP error! Status: ${response.status}`);
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 setHtmlData(data.html_data);
+//             })
+//             .catch(error => {
+//                 console.error('Error setting table data:', error);
+//             });
+//     }, []);
 
-    return (
-        <div style={{ marginTop: "40px" }}>
-            {/* Render HTML safely */}
-            <div dangerouslySetInnerHTML={{ __html: htmlData }} />
-        </div>
-    );
-};
+//     return (
+//         <div style={{ marginTop: "40px" }}>
+//             {/* Render HTML safely */}
+//             <div dangerouslySetInnerHTML={{ __html: htmlData }} />
+//         </div>
+//     );
+// };
 
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)
@@ -432,6 +433,7 @@ function ExplorerContainer({label, count}){
             .then(response => {
                 if (!response.ok) {
                     // If response is not OK, throw an error to catch block
+                    console.log('encountered an error in setting the table: status=', response.status);
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
@@ -459,6 +461,7 @@ function ExplorerContainer({label, count}){
             .then(response => {
                 if (!response.ok) {
                     // If response is not OK, throw an error to catch block
+                    console.log('encountered an error in setting the pygwalker: status=', response.status);
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
@@ -940,4 +943,4 @@ function ExplorerContainer({label, count}){
 
 
 
-export {SideBar, ExplorerContainer, PygwalkerComponent, HelpModal}
+export {SideBar, ExplorerContainer, HelpModal}
