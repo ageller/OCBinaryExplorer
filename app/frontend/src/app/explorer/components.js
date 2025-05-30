@@ -72,8 +72,8 @@ const SideBar = React.forwardRef(({buttons, onHelpClick, headerRef}, ref) => {
     }, []);
 
     return (
-        <div className = "sideBar" ref={ref} style={{ paddingTop: `${topbarHeight}px`, maxHeight: `calc(100vh - ${topbarHeight}px)`}}>
-            <div className = "sideBarButtons" style={{ maxHeight: `calc(100vh - ${topbarHeight}px - 40px)`}}>
+        <div className = "sideBar" ref={ref} style={{ paddingTop: `${topbarHeight}px`, maxHeight: `calc(var(--vh, 1vh) * 100 - ${topbarHeight}px)`}}>
+            <div className = "sideBarButtons" style={{ maxHeight: `calc(var(--vh, 1vh) * 100 - ${topbarHeight}px - 40px)`}}>
                 {buttons.map((data, index) => (
                     <SideBarButton key = {index} {...data}/>
                 ))}

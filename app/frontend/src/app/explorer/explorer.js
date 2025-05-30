@@ -33,6 +33,19 @@ export default function Explorer() {
         return () => window.removeEventListener('resize', updateWidth);
     }, []);
 
+    useEffect(() => {
+        const updateVh = () => {
+            // Calculate 1% of the viewport height
+            let vh = window.innerHeight * 0.01;
+            // Set the value in the --vh custom property
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+
+        updateVh(); // set on load
+        window.addEventListener('resize', updateVh); // update on resize
+        return () => window.removeEventListener('resize', updateVh);
+    }, []);
+
     let headerProps = {
         title:"Open Cluster Binary Explorer",
     }
