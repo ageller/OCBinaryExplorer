@@ -24,7 +24,9 @@ export default function Explorer() {
     useEffect(() => {
         const updateWidth = () => {
             if (sidebarRef.current) {
-                setSidebarWidth(sidebarRef.current.offsetWidth);
+                setTimeout(() => {
+                    setSidebarWidth(sidebarRef.current.offsetWidth);
+                }, 100); // delay for mobile consistency on rotation
             }
         };
 
@@ -33,12 +35,15 @@ export default function Explorer() {
         return () => window.removeEventListener('resize', updateWidth);
     }, []);
 
+    // used to try to standardize sizes on mobile and desktop
     useEffect(() => {
         const updateVh = () => {
-            // Calculate 1% of the viewport height
-            let vh = window.innerHeight * 0.01;
-            // Set the value in the --vh custom property
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            setTimeout(() => {
+                // Calculate 1% of the viewport height
+                let vh = window.innerHeight * 0.01;
+                // Set the value in the --vh custom property
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }, 100); // delay for mobile consistency on rotation
         };
 
         updateVh(); // set on load
