@@ -669,9 +669,12 @@ function ExplorerContainer({label, count}){
                         showline: true,
                         zeroline: false,
                     },
+                    title: {
+                        text: plotData.cluster.replace('_',' ') + ' : ' + plotData.table.replace('_',' '),
+                    },
                     width: divRef.current.clientWidth,
                     height: divRef.current.clientHeight - 50,
-                    margin: {l: 60, r: 10, b: 40, t: 40 }
+                    margin: {l: 60, r: 10, b: 40, t: 80}
                 }))
             } else if (plotData.type === "scatter"){
                 setPlotlyLayout((prevData) => ({
@@ -688,9 +691,12 @@ function ExplorerContainer({label, count}){
                         showline: true,
                         zeroline: false,
                     },
+                    title: {
+                        text: plotData.cluster.replace('_',' ') + ' : ' + plotData.table.replace('_',' '),
+                    },
                     width: divRef.current.clientWidth,
                     height: divRef.current.clientHeight - 50,
-                    margin: {l: 60, r: 10, b: 40, t: 40 }
+                    margin: {l: 60, r: 10, b: 40, t: 80}
                 }))
             } else if (plotData.type === "table"){
                 setTableLayout((prevData) => ({
