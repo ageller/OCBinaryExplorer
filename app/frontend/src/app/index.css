@@ -114,17 +114,22 @@ html,body{
     flex-wrap:wrap;
     max-height:100vh;
 }
-.sideBar .button{
+.sideBarButtons{
+    display:flex;
+    flex-direction:column;
+    flex-wrap:wrap;
+}
+.sideBarButtons .button{
     width:70px;
     height:90px;
     border: 1px solid black;
     border-radius:10px;
     margin: 15px;
 }
-.sideBar .button .icon{
+.sideBarButtons .button .icon{
     font-size:70px;
 }
-.sideBar .button .label{
+.sideBarButtons .button .label{
     font-size:20px;
     text-align:center;
     margin-top:-10px

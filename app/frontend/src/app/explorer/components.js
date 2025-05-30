@@ -72,10 +72,12 @@ const SideBar = React.forwardRef(({buttons, onHelpClick, headerRef}, ref) => {
     }, []);
 
     return (
-        <div className = "sideBar" ref={ref} style={{ paddingTop: `${topbarHeight}px`,maxHeight: `calc(100vh - ${topbarHeight}px)`}}>
-            {buttons.map((data, index) => (
-                <SideBarButton key = {index} {...data}/>
-            ))}
+        <div className = "sideBar" ref={ref} style={{ paddingTop: `${topbarHeight}px`, maxHeight: `calc(100vh - ${topbarHeight}px)`}}>
+            <div className = "sideBarButtons" style={{ maxHeight: `calc(100vh - ${topbarHeight}px - 40px)`}}>
+                {buttons.map((data, index) => (
+                    <SideBarButton key = {index} {...data}/>
+                ))}
+            </div>
             <div style = {{display:'flex', flexDirection:'row'}}>
                 <div style= {{width:"50%"}}>
                     <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px", left:"0px"}}/>
