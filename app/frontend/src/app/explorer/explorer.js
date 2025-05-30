@@ -26,7 +26,7 @@ export default function Explorer() {
             if (sidebarRef.current) {
                 setTimeout(() => {
                     setSidebarWidth(sidebarRef.current.offsetWidth);
-                }, 100); // delay for mobile consistency on rotation
+                }, 200); // delay for mobile consistency on rotation
             }
         };
 
@@ -43,7 +43,7 @@ export default function Explorer() {
                 let vh = window.innerHeight * 0.01;
                 // Set the value in the --vh custom property
                 document.documentElement.style.setProperty('--vh', `${vh}px`);
-            }, 100); // delay for mobile consistency on rotation
+            }, 200); // delay for mobile consistency on rotation
         };
 
         updateVh(); // set on load
