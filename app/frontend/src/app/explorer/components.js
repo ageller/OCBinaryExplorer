@@ -202,6 +202,11 @@ function ExplorerContainer({label, count}){
     const handleDragStart = (e) => {
         e.stopPropagation();
 
+        // replace the "ghost" preview image with a transparent SVG (remove it)
+        const img = new Image();
+        img.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnLz4="; // transparent SVG
+        e.dataTransfer.setDragImage(img, 0, 0);
+
         const boundingRect = e.currentTarget.getBoundingClientRect();
         setDiffPos({
             diffX: e.screenX - boundingRect.left,
@@ -209,7 +214,6 @@ function ExplorerContainer({label, count}){
         });
         setZIndex(getMaxZValue() + 1);
         e.dataTransfer.setData('text/plain', ''); // Required for dragging in Firefox
-        e.dataTransfer.setDragImage(divRef.current,e.screenX - boundingRect.left, e.screenY - boundingRect.top);
         setIsDragging(true);
         return true;
     };
