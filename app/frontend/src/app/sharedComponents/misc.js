@@ -1,7 +1,9 @@
-function HeaderTop({ title, subtitle, subsubtitle}) {
+import React from 'react';
+
+const HeaderTop = React.forwardRef(({ title, subtitle, subsubtitle }, ref) => {
 
     return (
-        <div className = "topNav">
+        <div id="topbar" ref={ref} className = "topNav">
             {(title || subtitle) &&
                 <div className = "content">
                     {title && <div className = "header">{title}</div>}
@@ -11,9 +13,9 @@ function HeaderTop({ title, subtitle, subsubtitle}) {
             {subsubtitle && <div className = "content">{subsubtitle}</div>}
 
         </div>
-    )
+    );
 
-}
+});
 
 function Copyright(){
     return(

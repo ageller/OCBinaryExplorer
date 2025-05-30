@@ -3,6 +3,7 @@
 // for explorer divs that are created when clicking on a button
 // https://stackoverflow.com/questions/33840150/onclick-doesnt-render-new-react-component
 
+import React from 'react';
 import {useState, useContext, useRef, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import {GlobalStateContext} from '../context/globalState';
@@ -54,24 +55,39 @@ function SideBarFunctionButton({label, icon, style, onClick}){
         </div>
     )
 }
-function SideBar({buttons, onHelpClick}){
+const SideBar = React.forwardRef(({buttons, onHelpClick, headerRef}, ref) => {
+
+    const [topbarHeight, setTopbarHeight] = useState(0);
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (headerRef.current) {
+                setTopbarHeight(headerRef.current.offsetHeight);
+            }
+        };
+
+        updateHeight(); // set on load
+        window.addEventListener('resize', updateHeight); // update on resize
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
+
     return (
-        <div className = "sideBar">
-            <div style = {{height:'80px'}}></div>
+        <div className = "sideBar" ref={ref} style={{ paddingTop: `${topbarHeight}px`,maxHeight: `calc(100vh - ${topbarHeight}px)`}}>
             {buttons.map((data, index) => (
                 <SideBarButton key = {index} {...data}/>
             ))}
             <div style = {{display:'flex', flexDirection:'row'}}>
                 <div style= {{width:"50%"}}>
-                    <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px"}}/>
+                    <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px", left:"0px"}}/>
                 </div>
                 <div >
-                    <SideBarFunctionButton label = "help" icon = "question_mark" style={{position:"absolute", bottom:"0px"}} onClick = {onHelpClick} />
+                    <SideBarFunctionButton label = "help" icon = "question_mark" style={{position:"absolute", bottom:"0px", left:"50px"}} onClick = {onHelpClick} />
                 </div>
             </div>
         </div>
     )
-}
+
+});
 
 // modal for the help content
 export default function HelpModal({ show, onClose, content }) {
@@ -104,42 +120,6 @@ export default function HelpModal({ show, onClose, content }) {
     );
 }
 
-
-// // component to get the HTML string from pygwalker and render it
-// const PygwalkerComponent = () => {
-//     const [htmlData, setHtmlData] = useState("");
-
-//     useEffect(() => {
-//         fetch('/ocbexapi/myPygwalker', {
-//             method: 'POST',
-//             headers: {
-//               'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify(plotData),
-//           })
-//             .then(response => {
-//                 if (!response.ok) {
-//                     // If response is not OK, throw an error to catch block
-//                     console.log('encountered an error in pygwalker component: status=', response.status);
-//                     throw new Error(`HTTP error! Status: ${response.status}`);
-//                 }
-//                 return response.json();
-//             })
-//             .then(data => {
-//                 setHtmlData(data.html_data);
-//             })
-//             .catch(error => {
-//                 console.error('Error setting table data:', error);
-//             });
-//     }, []);
-
-//     return (
-//         <div style={{ marginTop: "40px" }}>
-//             {/* Render HTML safely */}
-//             <div dangerouslySetInnerHTML={{ __html: htmlData }} />
-//         </div>
-//     );
-// };
 
 function ExplorerContainer({label, count}){
     // I'd like to be able to set the cursor while dragging to something other than the red circle (why is that default?!)

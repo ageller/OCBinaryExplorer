@@ -300,11 +300,9 @@ function AboutSection(){
 
 function ExplorerEntryButton() {
     return (
-        <Link href="explorer">
-            <div className="foregroundBackgroundColor linkDiv" style={{ marginTop:'16px', width:'140px', padding:'12px', borderRadius:'40px', textAlign:'center' }}>
-                <div className="content">
-                    <div className="headerSmall bannerColor"><i>Enter</i> </div>
-                </div>
+        <Link href="explorer" style={{textDecoration:"none"}}>
+            <div className="foregroundBackgroundColor linkDiv" style={{ marginTop:'16px', width:'140px', padding:'12px', borderRadius:'40px', textAlign:'center'}}>
+                <div className="headerSmall bannerColor">Enter</div>
             </div>
         </Link>
     )

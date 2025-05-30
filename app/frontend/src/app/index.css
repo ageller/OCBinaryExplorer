@@ -89,7 +89,7 @@ html,body{
 }
 
 .content{
-	display: inline-block;
+	/* display: inline-block; */
 	box-sizing: border-box;
 	/* padding: 10px; */
 }
@@ -107,8 +107,12 @@ html,body{
     top:0;
     z-index:2;
     height:100%;
-    width:100px;
+    min-width:100px;
     background-color: var(--foreground);
+    display:flex;
+    flex-direction:column;
+    flex-wrap:wrap;
+    max-height:100vh;
 }
 .sideBar .button{
     width:70px;
@@ -224,14 +228,6 @@ html,body{
     width:100%;
     background-color:white;
     display:block;
-}
-.explorerInstructions{
-    padding:10px;
-    color:var(--lightInstructions);
-    font-size:20px;
-    line-height:26px;
-    font-style:italic;
-    text-align: justify;
 }
 .linkDiv{
 	cursor: pointer;
@@ -370,18 +366,7 @@ a:active {
 #homeHeader a:hover{
     text-decoration: underline;
 }
-.explorerInstructions a:link {
-    color:var(--lightInstructions);
-}
-.explorerInstructions a:visited {
-    color:var(--lightInstructions);
-}
-.explorerInstructions a:hover {
-    color:var(--lightInstructions);
-}
-.explorerInstructions a:active {
-    color:var(--lightInstructions);
-}
+
 
 /* animating on scroll */
 .animateScroll {
