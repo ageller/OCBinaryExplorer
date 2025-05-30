@@ -7,6 +7,8 @@ import {useState, useContext, useRef, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import {GlobalStateContext} from '../context/globalState';
 
+import {Disclaimer} from '../sharedComponents/misc'
+
 import dynamic from 'next/dynamic';
 const DynamicPlot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -16,6 +18,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
 
 
+// functions for the sidebar
 function SideBarButton({label, icon, style}){
     const {globalState, appendExplorerDiv} = useContext(GlobalStateContext);
 
@@ -37,26 +40,65 @@ function SideBarHomeButton({label, icon, style}){
 
     return( 
         <Link href = "/">
-            <div key = {label} className = "button linkDiv"  style = {style}>
+            <div key = {label} className = "halfbutton linkDiv"  style = {style}>
                 <div className = "material-symbols-outlined icon">{icon}</div>
-                <div className = "label">{label}</div>
             </div>
         </Link>
     )
 }
+function SideBarFunctionButton({label, icon, style, onClick}){
 
-function SideBar({buttons}){
+    return( 
+        <div key = {label} className = "halfbutton linkDiv"  style = {style} onClick={onClick}>
+            <div className = "material-symbols-outlined icon">{icon}</div>
+        </div>
+    )
+}
+function SideBar({buttons, onHelpClick}){
     return (
         <div className = "sideBar">
             <div style = {{height:'80px'}}></div>
             {buttons.map((data, index) => (
                 <SideBarButton key = {index} {...data}/>
             ))}
-            <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px"}}/>
-
+            <div style = {{display:'flex', flexDirection:'row'}}>
+                <div style= {{width:"50%"}}>
+                    <SideBarHomeButton label = "home" icon = "home" style={{position:"absolute", bottom:"0px"}}/>
+                </div>
+                <div >
+                    <SideBarFunctionButton label = "help" icon = "question_mark" style={{position:"absolute", bottom:"0px"}} onClick = {onHelpClick} />
+                </div>
+            </div>
         </div>
     )
 }
+
+// modal for the help content
+export default function HelpModal({ show, onClose, content }) {
+    if (!show) return null;
+
+    return (
+        <div className="helpModalContainer">
+            {/* Background overlay */}
+
+            {/* Modal content */}
+            <div className="helpModalContent">
+                <SideBarFunctionButton label = "close" icon = "close" style={{position:"absolute", top:"0px"}} onClick = {onClose} />
+                <h2 style= {{margin:"0px 60px"}}>Instructions</h2>
+                <p>Please use the buttons on the left to create containers for tables, histograms, scatter plots, or to explore the data through an instance of <Link href = "https://github.com/Kanaries/pygwalker">PyGwalker</Link>.</p>
+                <p>After clicking a button, you will be given options to customize your table or plot, accessible with the gear icon in the upper right corner of each container.</p>
+                <p>You can have multiple containers open at the same time.  Clicking + dragging in the top bar of a container allows you to move the container around this work area.  Clicking + dragging in the bottom-right corner of a container allows you to resize the container.</p>
+                <p>Information about the columns in all the tables can be found on <Link href = "https://github.com/ageller/OCBinaryExplorer">the README.md file in our GitHub repo.</Link>  The data used here is also available for direct download on <Link href = "https://zenodo.org/records/10080762">Zenodo here.</Link></p>
+                <p>Please report any bugs or feature requests to the Issues page on <Link href = "https://github.com/ageller/OCBinaryExplorer">our GitHub repo.</Link></p>
+                <br/><br/>
+                <div className="mediumColor" style={{fontStyle:"italic"}}>
+                    <Disclaimer />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 
 // component to get the HTML string from pygwalker and render it
 const PygwalkerComponent = () => {
@@ -893,4 +935,4 @@ function ExplorerContainer({label, count}){
 
 
 
-export {SideBar, ExplorerContainer, PygwalkerComponent}
+export {SideBar, ExplorerContainer, PygwalkerComponent, HelpModal}
