@@ -666,7 +666,8 @@ function ExplorerContainer({label, count}){
                         zeroline: false,
                     },
                     width: divRef.current.clientWidth,
-                    height: divRef.current.clientHeight - 50
+                    height: divRef.current.clientHeight - 50,
+                    margin: {l: 60, r: 10, b: 40, t: 40 }
                 }))
             } else if (plotData.type === "scatter"){
                 setPlotlyLayout((prevData) => ({
@@ -684,7 +685,8 @@ function ExplorerContainer({label, count}){
                         zeroline: false,
                     },
                     width: divRef.current.clientWidth,
-                    height: divRef.current.clientHeight - 50
+                    height: divRef.current.clientHeight - 50,
+                    margin: {l: 60, r: 10, b: 40, t: 40 }
                 }))
             } else if (plotData.type === "table"){
                 setTableLayout((prevData) => ({
