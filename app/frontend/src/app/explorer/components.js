@@ -159,6 +159,8 @@ function ExplorerContainer({label, count}){
         ymin:'',
         ymax:'',
         pygwalker_html_data:"",
+        x_log10:'',
+        y_log10:''
     });
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
@@ -510,6 +512,38 @@ function ExplorerContainer({label, count}){
         );
     };
 
+    const renderCheckbox = (dataKey) => {
+        const handleCheckboxChange = (event) => {
+            const { name, checked } = event.target;
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: checked,
+            }));
+        };
+
+        return (
+            <div style={{fontSize:'12px'}}>
+                <table>
+                    <tbody>
+                        <tr key={dataKey}>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    name={dataKey}
+                                    checked={plotData[dataKey]}
+                                    onChange={handleCheckboxChange}
+                                />
+                            </td>
+                            <td>{dataKey}</td>
+                        </tr>
+                    </tbody>
+                    </table>
+            </div>
+        );
+
+
+    };
+
     const renderCheckboxGrid = (dataKey) => {
         const handleCheckboxChange = (event) => {
             const { name, checked } = event.target;
@@ -601,6 +635,9 @@ function ExplorerContainer({label, count}){
                         <br/><br/>
                         5. (Optional) Set the x-axis range <br/>
                         {renderTextInput('xmin')}&nbsp;{renderTextInput('xmax')}
+                        <br/><br/>
+                        6. (Optional) Check boxes below to use a log scale for the y axis. <br/>
+                        {renderCheckbox('y_log10')}
                     </div>
                 )}
                 {label === 'scatter' && (
@@ -628,6 +665,10 @@ function ExplorerContainer({label, count}){
                         <br/><br/>
                         7. (Optional) Set the y-axis range <br/>
                         {renderTextInput('ymin')}&nbsp;{renderTextInput('ymax')}
+                        <br/><br/>
+                        8. (Optional) Check boxes below to use a log scale for the axes. <br/>
+                        {renderCheckbox('x_log10')}
+                        {renderCheckbox('y_log10')}
                     </div>
                 )}
                 {label === 'explore' && (
@@ -664,12 +705,14 @@ function ExplorerContainer({label, count}){
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
+                        type: 'linear'
                     },
                     yaxis: {
                         title: 'N', 
                         range: [plotData.ymin, plotData.ymax], 
                         showline: true,
                         zeroline: false,
+                        type: plotData.y_log10 ? 'log' : 'linear'
                     },
                     title: {
                         text: plotData.cluster.replace('_',' ') + ' : ' + plotData.table.replace('_',' '),
@@ -687,12 +730,14 @@ function ExplorerContainer({label, count}){
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
+                        type: plotData.x_log10 ? 'log' : 'linear'
                     },
                     yaxis: {
                         title: plotData.y_column, 
                         range: [plotData.ymin, plotData.ymax], 
                         showline: true,
                         zeroline: false,
+                        type: plotData.y_log10 ? 'log' : 'linear'
                     },
                     title: {
                         text: plotData.cluster.replace('_',' ') + ' : ' + plotData.table.replace('_',' '),
