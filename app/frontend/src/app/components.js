@@ -177,7 +177,7 @@ function ExplorerEntry() {
                 requestAnimationFrame(animate);
                 if (!isInteracting.value) {
                     // Rotate
-                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.001);
+                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0005);
                     camera.lookAt(scene.position);
                 }
 
