@@ -142,7 +142,7 @@ function ExplorerContainer({label, count}){
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
 
-    const [plotData, setPlotData] = useState({
+    const initialPlotData = {
         cluster: "",
         table: "",
         x_column: "",
@@ -166,7 +166,9 @@ function ExplorerContainer({label, count}){
         pygwalker_html_data:"",
         x_log10:'',
         y_log10:''
-    });
+    }
+    const [plotData, setPlotData] = useState(initialPlotData);
+
     const [availableClusters, setAvailableClusters] = useState({clusters:[], options:[]});
     const [availableTables, setAvailableTables] = useState({tables:[], options:[]});
     const [availableColumns, setAvailableColumns] = useState({columns:[], options:[]});
@@ -517,14 +519,26 @@ function ExplorerContainer({label, count}){
         );
     };
 
-    const renderCheckbox = (dataKey) => {
-        const handleCheckboxChange = (event) => {
-            const { name, checked } = event.target;
+    // function to apply changes from checkboxes to the plotData object
+    const handleCheckboxChange = (dataKey, name, checked, depth) => {
+        if (depth === 1){
             setPlotData((prevData) => ({
                 ...prevData,
                 [dataKey]: checked,
             }));
         };
+        if (depth === 2){
+            setPlotData((prevData) => ({
+                ...prevData,
+                [dataKey]: {
+                    ...prevData[dataKey],
+                        [name]: checked,
+                },
+            }));
+        }
+    };
+
+    const renderCheckbox = (dataKey) => {
 
         return (
             <div style={{fontSize:'12px'}}>
@@ -536,7 +550,7 @@ function ExplorerContainer({label, count}){
                                     type="checkbox"
                                     name={dataKey}
                                     checked={plotData[dataKey]}
-                                    onChange={handleCheckboxChange}
+                                    onChange={(e) => handleCheckboxChange(dataKey, '', e.target.checked, 1)}
                                 />
                             </td>
                             <td>{dataKey}</td>
@@ -549,47 +563,38 @@ function ExplorerContainer({label, count}){
 
     };
 
-    const renderCheckboxGrid = (dataKey) => {
-        const handleCheckboxChange = (event) => {
-            const { name, checked } = event.target;
-            setPlotData((prevData) => ({
-                ...prevData,
-                [dataKey]: {
-                    ...prevData[dataKey],
-                        [name]: checked,
-                },
-            }));
-        };
-        
-        // function to select all boxes
-        const selectAllCheckboxes = () => {
-            const allSelected = Object.values(plotData[dataKey]).every((value) => value === true);
+    // function to select all boxes
+    const selectAllCheckboxes = (dataKey) => {
+        const optionsObj = plotData[dataKey];
+        const updatedOptions = Object.fromEntries(
+            Object.entries(optionsObj).map(([option, checked]) => [option, !checked])
+        );
 
-            setPlotData((prevData) => ({
-                ...prevData,
-                [dataKey]: Object.fromEntries(
-                    Object.keys(prevData[dataKey]).map((option) => [option, !allSelected])
-                ),
-            }));
-        };
+        setPlotData((prevData) => ({
+            ...prevData,
+            [dataKey]: updatedOptions,
+        }));
+
+
+    };
     
+    const renderCheckboxGrid = (dataKey) => {
+        const optionsObj = plotData[dataKey];
+        if (Object.keys(optionsObj).length === 0) return null;
+
         return (
             <div style={{fontSize:'12px'}}>
-                {Object.keys(plotData[dataKey] || {}).length > 0 && (
-                <>
-                    <button id="selectAllBtn" onClick={selectAllCheckboxes}>Select All</button>
-                </>
-                )}
+                    <button id="selectAllBtn" onClick={() => selectAllCheckboxes(dataKey)}>Toggle Select All</button>
                 <table>
                 <tbody>
-                    {Object.keys(plotData[dataKey]).map((option) => (
+                    {Object.entries(optionsObj).map(([option, checked], idx) => (
                         <tr key={option}>
                             <td>
                                 <input
                                     type="checkbox"
                                     name={option}
-                                    checked={plotData[dataKey][option]}
-                                    onChange={handleCheckboxChange}
+                                    checked={checked}
+                                    onChange={(e) => handleCheckboxChange(dataKey, option, e.target.checked, 2)}
                                 />
                             </td>
                             <td>{option}</td>
@@ -603,6 +608,18 @@ function ExplorerContainer({label, count}){
 
     };
 
+    useEffect(() => {
+       // ensure that the values in plotData are cleared so that the checkboxgrid (and others are forced to update)
+        if (!plotData.cluster) return;
+
+        // Reset everything, but keep the new cluster value
+        setPlotData({
+            ...initialPlotData,
+            cluster: plotData.cluster,
+        })
+
+    }, [plotData.cluster]);
+
     const explorerSettings = () => {
         return (
             <div style={{ padding: '40px 0px' }}>
@@ -611,7 +628,7 @@ function ExplorerContainer({label, count}){
                 </p>
                 {label === 'table' && (
                     <div className="settingsContainer">
-                        1. Select the cluster <br/>
+                        1. Select the database file <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
                         2. Select the data table <br/>
@@ -623,7 +640,7 @@ function ExplorerContainer({label, count}){
                 )}
                 {label === 'histogram' && (
                     <div className="settingsContainer">
-                        1. Select the cluster <br/>
+                        1. Select the database file <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
                         2. Select the data table <br/>
@@ -647,7 +664,7 @@ function ExplorerContainer({label, count}){
                 )}
                 {label === 'scatter' && (
                     <div className="settingsContainer">
-                        1. Select the cluster <br/>
+                        1. Select the database file <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
                         2. Select the data table <br/>
@@ -681,7 +698,7 @@ function ExplorerContainer({label, count}){
                 )}
                 {label === 'explore' && (
                     <div className="settingsContainer">
-                        1. Select the cluster <br/>
+                        1. Select the database file <br/>
                         {renderDropdown(availableClusters.options, 'cluster')}
                         <br/><br/>
                         2. Select the data table <br/>
