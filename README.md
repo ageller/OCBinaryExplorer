@@ -3,21 +3,18 @@ A website to explore results from the BASE-9 Open Cluster project
 
 ## Explanation of the data
 
-Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `SQLite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table.  Note: While NGC 6791 falls outside of the distance cuts for this sample, we’ve included its data from our 2023 paper for completeness. As a result, some values in the new table may be missing for this cluster.
+Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `SQLite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table.  
 
-### `HDBSCAN_summary.db` : HDBSCAN parameters used with Gaia DR3 RA, Dec, parallax, and proper motion (in both dimensions) to find the cluster members
+**Note**: While NGC 6791 falls outside of the distance cuts for the sample in our second paper, we’ve included NGC 6791 data from our first paper (from 2023) for completeness. As a result, some of the values for NGC 6791 may differ from the description below.  Please see our [Zenodo description](https://zenodo.org/records/10080762) for information about the content of the NGC 6791 data.
 
-This file contains one table : `HDBSCAN_parameters`, with the following columns:
+---
 
-- `Cluster` : cluster name
-- `Radius` : radius, in degrees, from the cluster center over which we perform the initial HDBSCAN search
-- `Min_size` : minimum cluster size for HDBSCAN
-- `Group` : cluster number that corresponds to the open cluster
-- `no_points` : number of points found in the cluster
 
 ### `cluster_summary.db` : the summary database
 
-This file contains one table : `cluster_parameters`, with the following columns:
+This file contains two table : `cluster_parameters` and `hdbscan_cluster_parameters` 
+
+#### `cluster_parameters` : cluster-wide parameters from our Gaia and BASE-9 analyses
 
 - `Cluster` : cluster name
 - `Center_RA_hr`, `Center_Dec_deg` : central right ascension (in hours) and declination (in degrees) for the cluster
@@ -50,7 +47,17 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `mean_pmdec_mas_per_yr` : : mean proper motion in Dec from Gaia in mas/yr for cluster members
 - `mean_distance_pc`: mean distance from inverting the Gaia parallax in pc for cluster members
 
-### `NGC_*.db` : the cluster database
+#### `hdbscan_cluster_parameters` : HDBSCAN parameters used with Gaia DR3 RA, Dec, parallax, and proper motion (in both dimensions) to find the cluster members
+
+
+- `Cluster` : cluster name
+- `radius` : radius, in degrees, from the cluster center over which we perform the initial HDBSCAN search
+- `min_size` : minimum cluster size for HDBSCAN
+- `group_number` : cluster number that corresponds to the open cluster
+- `n_objects` : number of objects found in the cluster
+
+---
+### `[cluster name].db` : the cluster database
 
 Each cluster has its own database file (e.g., `NGC_188.db`).  Within each of these files are multiple tables.  Each table and the columns they contain are described below.
 
