@@ -3,7 +3,17 @@ A website to explore results from the BASE-9 Open Cluster project
 
 ## Explanation of the data
 
-Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `SQLite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table. 
+Users can interact with the data from our papers in multiple ways within the [associated interactive website](http://ocbinaryexplorer.ciera.northwestern.edu/) and can also download the data directly from [Zenodo here](https://zenodo.org/records/10080762).  Data files are stored in `SQLite` format.  Each cluster has a database file, and there is also a summary database with information on all available clusters in our survey. Below we describe the tables in each database file and the columns in each table.  Note: While NGC 6791 falls outside of the distance cuts for this sample, we’ve included its data from our 2023 paper for completeness. As a result, some values in the new table may be missing for this cluster.
+
+### `HDBSCAN_summary.db` : HDBSCAN parameters used with Gaia DR3 RA, Dec, parallax, and proper motion (in both dimensions) to find the cluster members
+
+This file contains one table : `HDBSCAN_parameters`, with the following columns:
+
+- `Cluster` : cluster name
+- `Radius` : radius, in degrees, from the cluster center over which we perform the initial HDBSCAN search
+- `Min_size` : minimum cluster size for HDBSCAN
+- `Group` : cluster number that corresponds to the open cluster
+- `no_points` : number of points found in the cluster
 
 ### `cluster_summary.db` : the summary database
 
@@ -16,18 +26,23 @@ This file contains one table : `cluster_parameters`, with the following columns:
 - `Distance_m-M`, `Distance_16_m-M_16`, `Distance_84_m-M` : median, 16th percentile and 84th percentile of the distance modulus posterior in magnitudes for the cluster derived from our BASE-9 analysis 
 - `Distance_pc` : median distance to the cluster in parsecs derived from our BASE-9 analysis
 - `Av_mag`, `Av_16_mag`, `Av_84_mag` : median, 16th percentile and 84th percentile of the extinction posterior in magnitudes for the cluster derived from our BASE-9 analysis 
-- `r_h_deg`, `r_h_pc`  : cluster half-mass radius in degrees and parsecs (2D projection)
 - `r_eff_arcmin` :  cluster effective radius in arcminutes
 - `r_core_arcmin`, `r_core_pc`,  `sig_r_core_arcmin` : cluster core radius in arcminutes and parsecs, and the 1 sigma error on the cluster core radius in arcminutes,  derived from a King model fit to the MLMS sample (and assuming the median distance to the cluster)
 - `r_tidal_arcmin`, `sig_r_tidal_arcmin` : cluster tidal radius and the 1 sigma error on the cluster tidal radius in arcminutes aderived from a King model fit to the MLMS sample
+- `min_p_value`: minimum p-value used for cluster membership selection
+- `r_h_deg`, `r_h_pc`  : cluster half-mass radius in degrees and parsecs (2D projection)
 - `N`, `N_MLMS` : total number of objects (single and binary) and the number of MLMS objects in the cluster
 - `N_bin`, `N_bin_MLMS` : total number of binaries and the number of MLMS binaries in the cluster 
 - `N1`, `N1_MLMS` : number of objects (single and binary) and the number of MLMS objects within one core radius from the cluster center  
 - `central_rho_N1_per_arcmin2`, `central_rho_N1_per_pc2`, `central_rho_16_N1_per_pc2`, `central_rho_84_N1_per_pc2` : stellar number density within 1 core radius from the cluster center in units of N/arcmin^2 and N/pc^2 (respectively) and the 16th and 84th percentiles for this density
-- `fb_i`,  `sig_fb_i` : raw binary fraction for all objects in our sample and the 1 sigma uncertainty on that value for the cluster
-- `fb_MLMS_i`, `sig_fb_MLMS_i` : raw binary fraction for the MLMS stars and the 1 sigma uncertainty on that value for the cluster
-- `fb_MLMS_c`, `sig_fb_MLMS_c` : incompleteness corrected binary fraction for the MLMS stars and the 1 sigma uncertainty on that value for the cluster
-- `fb_MLMS_c_big_q`, `sig_fb_MLMS_c_big_q` : incompleteness corrected binary fraction for the MLMS stars, including only binaries with q > 0.4, and the 1 sigma uncertainty on that value for the cluster
+- `fb`,  `sig_fb` : binary fraction for all objects in our sample within three core radii and the 1 sigma uncertainty on that value for the cluster
+- `fb_MLMS`, `sig_fb_MLMS` : binary fraction for the MLMS stars within three core radii and the 1 sigma uncertainty on that value for the cluster
+- `fb_big_q`, `sig_fb_big_q` : binary fraction for all objects in our sample within three core radii, including only binaries with q > 0.5, and the 1 sigma uncertainty on that value for the cluster
+- `fb_MLMS_big_q`, `sig_fb_MLMS_big_q` : binary fraction for the MLMS stars within three core radii, including only binaries with q > 0.5, and the 1 sigma uncertainty on that value for the cluster
+-  `fb_rc`,  `sig_fb_rc` : binary fraction for all objects in our sample within one core radii and the 1 sigma uncertainty on that value for the cluster
+- `fb_rc_MLMS`, `sig_fb_rc_MLMS` : binary fraction for the MLMS stars within one core radii and the 1 sigma uncertainty on that value for the cluster
+- `fb_rc_big_q`, `sig_fb_rc_big_q` : binary fraction for all objects in our sample within one core radii, including only binaries with q > 0.5, and the 1 sigma uncertainty on that value for the cluster
+- `fb_rc_MLMS_big_q`, `sig_fb_rc_MLMS_big_q` : binary fraction for the MLMS stars within one core radii, including only binaries with q > 0.5, and the 1 sigma uncertainty on that value for the cluster
 - `tot_mass_M_Sun`, `tot_mass_16_M_Sun`, `tot_mass_84_M_Sun` : total cluster mass (counting all stars in our sample) in solar masses and the 16th and 84th percentiles of the total mass  
 - `tr_Myr`, `tr_16_Myr`, `tr_84_Myr` : half-mass relaxation time for the cluster in Myr and the 16th and 84th percentiles for that value
 - `mean_RV_km_per_s` : mean radial velocity from Gaia in km/s for cluster members
