@@ -177,7 +177,7 @@ function ExplorerEntry() {
                 requestAnimationFrame(animate);
                 if (!isInteracting.value) {
                     // Rotate
-                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0005);
+                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0002);
                     camera.lookAt(scene.position);
                 }
 
@@ -417,7 +417,7 @@ function DataAccess() {
         <div className="lightBackgroundColor" style={{ padding: "10px", marginTop:"40px", paddingBottom:"40px"}}>
             <div id="dataHeader" className="headerSmall darkColor">Data Access</div>
             <div className="darkColor"  style={{ paddingTop: '10px' }}>
-                Data used in this study are available on <a href="https://zenodo.org/records/10080762">Zenodo here</a>.
+                Data used in this study are available on Zenodo.  See <a href="https://zenodo.org/records/10080762">here for data from our 2023 paper</a> and <a href="https://zenodo.org/records/15733691">here for data from our 2025 paper</a>.
             </div>
         </div>
     )
