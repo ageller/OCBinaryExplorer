@@ -33,6 +33,7 @@ function ExplorerEntry() {
     const sceneContainerRef = useRef(null);
     const [availableClusters, setAvailableClusters] = useState([]);
     const isInteracting = useRef(false);
+    const [iteration, setIteration] = useState(0);
 
     // Function to handle window resize event
     useEffect(() => {
@@ -95,6 +96,13 @@ function ExplorerEntry() {
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 1e5);
             camera.position.z = 0.1;
+            // look at the OCs
+            // I can't figure out how to simply set the position and rotation correctly,
+            // so... I will run the loop to the correct position
+            for (let i = 0; i < 1100; i++) {
+                camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0005);
+                camera.lookAt(scene.position);
+            }
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
 
@@ -171,18 +179,22 @@ function ExplorerEntry() {
             return points;
         };
 
+
+
         // Animate the scene
         const animateScene = (scene, renderer, camera, controls) => {
             const animate = () => {
+
                 requestAnimationFrame(animate);
                 if (!isInteracting.value) {
                     // Rotate
-                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0002);
+                    camera.position.applyAxisAngle(new THREE.Vector3(1, 1, 0), 0.0004);
                     camera.lookAt(scene.position);
                 }
-
+                // console.log("position", camera.position, "rotation", camera.rotation)
                 controls.update();
                 renderer.render(scene, camera);
+
             };
             animate();
         };
