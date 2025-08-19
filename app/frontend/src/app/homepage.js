@@ -77,7 +77,7 @@ export default function HomePage() {
                 title: "Stellar Dynamics in Open Clusters Increases the Binary Fraction and Mass Ratios: Evidence from Photometric Binaries in 35 Open Clusters",
                 bib: "2025, ApJ, 989, 104",
                 doi: "10.3847/1538-4357/ade9bc",
-                link: "https://ui.adsabs.harvard.edu/abs/2025arXiv250620889C/abstract"
+                link: "https://ui.adsabs.harvard.edu/abs/2025ApJ...989..104C/abstract"
             },
             {
                 authors: "Childs, C. A., Geller, A. M., von Hippel, T., Motherway, E., and Zwicker, C.",
