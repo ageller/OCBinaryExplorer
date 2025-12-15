@@ -47,4 +47,5 @@ __pycache__
 *.pyc
 
 # database files
+app/backend/database/
 *.db
