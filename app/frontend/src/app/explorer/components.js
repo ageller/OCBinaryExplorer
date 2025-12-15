@@ -16,7 +16,7 @@ const DynamicPlot = dynamic(() => import('react-plotly.js'), { ssr: false });
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
+import { generateCsv } from 'export-to-csv'; //or use your library of choice here
 
 
 // functions for the sidebar
@@ -815,25 +815,34 @@ function ExplorerContainer({label, count}){
         return header
     },[plotData.table_columns]);
 
-    const csvOptions = {
-        fieldSeparator: ',',
-        quoteStrings: '"',
-        decimalSeparator: '.',
-        showLabels: true,
-        useBom: true,
-        useKeysAsHeaders: false,
-        headers: use_table_columns.map((c) => c.header),
-    };
       
-    const csvExporter = new ExportToCsv(csvOptions);
 
     const handleExportRows = (rows) => {
-        csvExporter.generateCsv(rows.map((row) => row.original));
+        const csvOptions = {
+            fieldSeparator: ',',
+            quoteStrings: '"',
+            decimalSeparator: '.',
+            showLabels: true,
+            useBom: true,
+            useKeysAsHeaders: true,
+            // useKeysAsHeaders: false,
+            // headers: use_table_columns.map((c) => c.header),
+        };
+        const csvString = generateCsv(csvOptions)(rows.map((row) => row.original));
+
+        // manually trigger download
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'export.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
     
-    const handleExportData = () => {
-        csvExporter.generateCsv(plotData.table_data);
-    };
+
 
     const visualizeData = () => {
         var dataUse;
