@@ -38,6 +38,24 @@ def get_available_clusters():
 
     return clusters
 
+def _get_db_path(cluster):
+    """Return the real path to an existing cluster DB, or None if invalid."""
+    # Normalize the same way the endpoints always did
+    cluster = str.replace(cluster, ' ', '_')
+    # Whitelist: only connect to clusters that already exist on disk
+    if cluster not in get_available_clusters():
+        return None
+    data_dir_real = os.path.realpath(data_dir)
+    db_path = os.path.realpath(os.path.join(data_dir_real, cluster + '.db'))
+    # Prevent path traversal: resolved path must stay inside data_dir
+    if not db_path.startswith(data_dir_real + os.sep):
+        return None
+    return db_path
+
+def _qi(name):
+    """Quote an SQL identifier with double-quotes (SQLite standard)."""
+    return '"' + name.replace('"', '""') + '"'
+
 def get_available_tables(cursor):
     # get all the available tables
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -51,28 +69,24 @@ def get_available_tables(cursor):
             last.append(t)
         else:
             first.append(t)
-            
+
     return first + last
 
 def get_available_columns(cursor, table_name):
-    # Execute the PRAGMA to get table information
-    cursor.execute(f"PRAGMA table_info({table_name})")
-
-    # Fetch all rows of the result
+    # Validate table_name against the actual tables in this DB before using it
+    if table_name not in get_available_tables(cursor):
+        return []
+    cursor.execute(f"PRAGMA table_info({_qi(table_name)})")
     table_info = cursor.fetchall()
-
-    # Print the column names
     column_names = [row[1] for row in table_info]
     return column_names
 
 def get_column_data(cursor, table_name, column):
-    # select the data from the table
-    cursor.execute(f"SELECT {column} FROM {table_name}")
-    
-    # Fetch all the rows of that result
+    # Validate column against the actual columns in this table before using it
+    if column not in get_available_columns(cursor, table_name):
+        return []
+    cursor.execute(f"SELECT {_qi(column)} FROM {_qi(table_name)}")
     dd = cursor.fetchall()
-    
-    # return the data
     data = [d[0] for d in dd]
     return data
 
@@ -90,11 +104,12 @@ class setCluster(Resource):
     def post(self):
         data = request.json
         tables = []
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
-            cursor = conn.cursor()
-            if (cursor):
-                tables = get_available_tables(cursor)
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
+            tables = get_available_tables(conn.cursor())
         return {"tables": tables}, 200
 api.add_resource(setCluster, '/ocbexapi/setCluster')
 
@@ -103,11 +118,13 @@ class setTable(Resource):
     def post(self):
         data = request.json
         columns = []
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
-            cursor = conn.cursor()
-            if (cursor and data['table'] != ''):
-                columns = get_available_columns(cursor, data['table'])
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
+            if data['table'] != '':
+                columns = get_available_columns(conn.cursor(), data['table'])
         return {"columns": columns}, 200
 api.add_resource(setTable, '/ocbexapi/setTable')
 
@@ -118,13 +135,16 @@ class setXColumn(Resource):
         x1_data = []
         x2_data = []
         x_data = []
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
-            if (cursor and data['table'] != '' and data['x_column'] != ''):
+            if data['table'] != '' and data['x_column'] != '':
                 x1_data = get_column_data(cursor, data['table'], data['x_column'])
                 x_data = x1_data
-            if (cursor and data['table'] != '' and data['x2_column'] != '' and data['x2_column'] != 'None'):
+            if data['table'] != '' and data['x2_column'] != '' and data['x2_column'] != 'None':
                 x2_data = get_column_data(cursor, data['table'], data['x2_column'])
                 x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
         return {"x_data": x_data}, 200
@@ -135,11 +155,13 @@ class setYColumn(Resource):
     def post(self):
         data = request.json
         y_data = []
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
-            cursor = conn.cursor()
-            if (cursor and data['table'] != '' and data['y_column'] != ''):
-                y_data = get_column_data(cursor, data['table'], data['y_column'])
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
+            if data['table'] != '' and data['y_column'] != '':
+                y_data = get_column_data(conn.cursor(), data['table'], data['y_column'])
         return {"y_data": y_data}, 200
 api.add_resource(setYColumn, '/ocbexapi/setYColumn')
 
@@ -148,11 +170,13 @@ class setColorColumn(Resource):
     def post(self):
         data = request.json
         color_data = []
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
-            cursor = conn.cursor()
-            if (cursor and data['table'] != '' and data['color_column'] != ''):
-                color_data = get_column_data(cursor, data['table'], data['color_column'])
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
+            if data['table'] != '' and data['color_column'] != '':
+                color_data = get_column_data(conn.cursor(), data['table'], data['color_column'])
         return {"color_data": color_data}, 200
 api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 
@@ -161,14 +185,14 @@ class setTableData(Resource):
     def post(self):
         data = request.json
         table_data_df = pd.DataFrame()
-        if (data['cluster'] != ''):
-            conn = sqlite3.connect(os.path.join(data_dir, str.replace(data['cluster'],' ','_') + '.db'))
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
-            table_columns_use = []
-            for key, value in data['table_columns'].items():
-                if (value):
-                    table_columns_use.append(key)
-            if (cursor and data['table'] != '' and len(table_columns_use) > 0):
+            table_columns_use = [key for key, value in data['table_columns'].items() if value]
+            if data['table'] != '' and len(table_columns_use) > 0:
                 for c in table_columns_use:
                     try:
                         col_data = get_column_data(cursor, data['table'], c)
