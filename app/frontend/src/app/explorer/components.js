@@ -971,8 +971,12 @@ function ExplorerContainer({label, count}){
 
                     return (
                         <div style= {{marginTop: "40px"}}>
-                            {/* Render HTML safely */}
-                            <div dangerouslySetInnerHTML={{ __html: plotData.pygwalker_html_data }} />
+                            <iframe
+                                srcDoc={plotData.pygwalker_html_data}
+                                sandbox="allow-scripts allow-downloads"
+                                style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
+                                title="Data Explorer"
+                            />
                         </div>
                     )
                 }
