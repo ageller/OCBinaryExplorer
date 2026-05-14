@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # from flask_cors import CORS, cross_origin
 
@@ -16,6 +18,15 @@ app = Flask(__name__)
 # RESTful API
 
 api = Api(app)
+
+# Rate limiting — counts per worker process (9 workers → multiply by 9 for true max).
+# For a global limit across all workers, add nginx rate limiting (see README or comments below).
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["30 per minute"],
+    storage_uri="memory://",
+)
 
 # directory where all of the sqlite database files are stored (one per cluster)
 data_dir = os.path.join(os.getcwd(), 'database')
@@ -181,7 +192,7 @@ class setColorColumn(Resource):
 api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 
 class setTableData(Resource):
-    # set the database and return the available tables
+    decorators = [limiter.limit("20 per minute")]
     def post(self):
         data = request.json
         table_data_df = pd.DataFrame()
@@ -204,7 +215,7 @@ class setTableData(Resource):
 api.add_resource(setTableData, '/ocbexapi/setTableData')
 
 class myPygwalker(Resource):
-    # create the pyGwalker data explorer
+    decorators = [limiter.limit("10 per minute")]
     # I created a plot that had configs I liked, and copied that config line below
     # note that this requires pygwalker version 0.4.9.11
     def post(self):
