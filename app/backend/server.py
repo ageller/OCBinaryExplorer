@@ -24,7 +24,7 @@ api = Api(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["30 per minute"],
+    default_limits=["120 per minute"],
     storage_uri="memory://",
 )
 
@@ -192,7 +192,7 @@ class setColorColumn(Resource):
 api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 
 class setTableData(Resource):
-    decorators = [limiter.limit("20 per minute")]
+    decorators = [limiter.limit("60 per minute")]
     def post(self):
         data = request.json
         table_data_df = pd.DataFrame()
@@ -215,7 +215,7 @@ class setTableData(Resource):
 api.add_resource(setTableData, '/ocbexapi/setTableData')
 
 class myPygwalker(Resource):
-    decorators = [limiter.limit("10 per minute")]
+    decorators = [limiter.limit("30 per minute")]
     # I created a plot that had configs I liked, and copied that config line below
     # note that this requires pygwalker version 0.4.9.11
     def post(self):
