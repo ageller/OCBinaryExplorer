@@ -973,7 +973,7 @@ function ExplorerContainer({label, count}){
                         <div style= {{marginTop: "40px"}}>
                             <iframe
                                 srcDoc={plotData.pygwalker_html_data}
-                                sandbox="allow-scripts allow-downloads"
+                                sandbox="allow-scripts allow-downloads allow-same-origin"
                                 style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
                                 title="Data Explorer"
                             />
