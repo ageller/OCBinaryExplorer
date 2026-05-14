@@ -28,6 +28,14 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
 # directory where all of the sqlite database files are stored (one per cluster)
 data_dir = os.path.join(os.getcwd(), 'database')
 
