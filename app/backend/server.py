@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import logging
 
 # from flask_cors import CORS, cross_origin
 
@@ -240,8 +241,8 @@ class setTableData(Resource):
                     try:
                         col_data = get_column_data(cursor, data['table'], c)
                         table_data_df[c] = col_data
-                    except:
-                        pass
+                    except Exception as e:
+                        logging.warning("setTableData: error fetching column %r: %s", c, e)
         table_data_df.fillna('', inplace=True)
         return {"table_data": table_data_df.to_dict(orient = 'records')}, 200
 api.add_resource(setTableData, '/ocbexapi/setTableData')
@@ -267,8 +268,8 @@ class myPygwalker(Resource):
                     try:
                         col_data = get_column_data(cursor, data['table'], c)
                         table_data_df[c] = col_data
-                    except:
-                        pass
+                    except Exception as e:
+                        logging.warning("myPygwalker: error fetching column %r: %s", c, e)
                 if len(table_data_df) > 0:
                     pyg_html_str = pyg.to_html(table_data_df, appearance = 'light',
                         spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
