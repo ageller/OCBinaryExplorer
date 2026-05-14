@@ -779,7 +779,7 @@ function ExplorerContainer({label, count}){
             } else if (plotData.type === "explore"){
                 setTableLayout((prevData) => ({
                     ...prevData,
-                    maxHeight: (divRef.current.clientHeight - 100) + 'px'
+                    maxHeight: (divRef.current.clientHeight - 50) + 'px'
                 }))
             }
 
