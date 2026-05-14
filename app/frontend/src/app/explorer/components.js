@@ -779,7 +779,7 @@ function ExplorerContainer({label, count}){
             } else if (plotData.type === "explore"){
                 setTableLayout((prevData) => ({
                     ...prevData,
-                    maxHeight: (divRef.current.clientHeight - 50) + 'px'
+                    maxHeight: (divRef.current.clientHeight - 50) + 'px' // DON'T CHANGE THIS
                 }))
             }
 
@@ -970,14 +970,12 @@ function ExplorerContainer({label, count}){
                 if (plotData.table_data.length > 0) {
 
                     return (
-                        <div style={{marginTop: '40px'}}>
-                            <iframe
-                                srcDoc={plotData.pygwalker_html_data}
-                                sandbox="allow-scripts allow-downloads allow-same-origin"
-                                style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
-                                title="Data Explorer"
-                            />
-                        </div>
+                        <iframe
+                            srcDoc={plotData.pygwalker_html_data}
+                            sandbox="allow-scripts allow-downloads allow-same-origin"
+                            style={{marginTop: '40px', width: '100%', height: tableLayout.maxHeight, border: 'none'}}
+                            title="Data Explorer"
+                        />
                     )
                 }
             }
