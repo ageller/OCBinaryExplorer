@@ -8,6 +8,8 @@ const csp = [
     "img-src 'self' data: blob:",
     "connect-src 'self' data:",
     "frame-src 'self' blob:",
+    // PyGwalker spawns Web Workers from blob: URLs for its compute engine
+    "worker-src blob:",
     "object-src 'none'",
     "base-uri 'self'",
     "upgrade-insecure-requests",
