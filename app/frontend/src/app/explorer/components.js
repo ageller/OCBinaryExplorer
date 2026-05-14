@@ -138,6 +138,7 @@ function ExplorerContainer({label, count}){
     const left = left0 + count*5;
 
     const divRef = useRef(null);
+    const iframeRef = useRef(null);
     const [pos, setPos] = useState({ left: left, top: top, maxWidth: window.innerWidth - left0, maxHeight: window.innerHeight - top0 });
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -779,7 +780,7 @@ function ExplorerContainer({label, count}){
             } else if (plotData.type === "explore"){
                 setTableLayout((prevData) => ({
                     ...prevData,
-                    maxHeight: (divRef.current.clientHeight - 80) + 'px'
+                    maxHeight: (divRef.current.clientHeight - 40) + 'px'
                 }))
             }
 
@@ -843,6 +844,15 @@ function ExplorerContainer({label, count}){
     };
     
 
+
+    const hideIframeScrollbar = () => {
+        try {
+            const doc = iframeRef.current?.contentDocument;
+            if (doc?.documentElement) {
+                doc.documentElement.style.overflow = 'hidden';
+            }
+        } catch (e) {}
+    };
 
     const visualizeData = () => {
         var dataUse;
@@ -972,6 +982,8 @@ function ExplorerContainer({label, count}){
                     return (
                         <div style= {{marginTop: "40px"}}>
                             <iframe
+                                ref={iframeRef}
+                                onLoad={hideIframeScrollbar}
                                 srcDoc={plotData.pygwalker_html_data}
                                 sandbox="allow-scripts allow-downloads allow-same-origin"
                                 style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
