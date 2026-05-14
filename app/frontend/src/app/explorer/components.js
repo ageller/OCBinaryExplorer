@@ -287,7 +287,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster }),
           })
             .then(response => response.json())
             .then(data => {
@@ -315,7 +315,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster, table: plotData.table }),
           })
             .then(response => response.json())
             .then(data => {
@@ -351,7 +351,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster, table: plotData.table, x_column: plotData.x_column, x2_column: plotData.x2_column }),
           })
             .then(response => response.json())
             .then(data => {
@@ -376,7 +376,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster, table: plotData.table, y_column: plotData.y_column }),
           })
             .then(response => response.json())
             .then(data => {
@@ -400,7 +400,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster, table: plotData.table, color_column: plotData.color_column }),
           })
             .then(response => response.json())
             .then(data => {
@@ -424,7 +424,7 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({ cluster: plotData.cluster, table: plotData.table, table_columns: plotData.table_columns }),
           })
             .then(response => {
                 if (!response.ok) {
