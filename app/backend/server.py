@@ -45,8 +45,8 @@ def get_available_clusters():
     clusters = []
     contents = os.listdir(data_dir)
     for item in contents:
-        if os.path.isfile(os.path.join(data_dir, item)) and '.db' in item:
-            clusters.append(str.replace(item, '.db',''))
+        if os.path.isfile(os.path.join(data_dir, item)) and item.endswith('.db'):
+            clusters.append(item[:-3])
 
     # Sort the list alphabetically
     clusters.sort()
@@ -148,7 +148,10 @@ class setCluster(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            tables = get_available_tables(conn.cursor())
+            try:
+                tables = get_available_tables(conn.cursor())
+            finally:
+                conn.close()
         return {"tables": tables}, 200
 api.add_resource(setCluster, '/ocbexapi/setCluster')
 
@@ -163,8 +166,11 @@ class setTable(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            if data['table'] != '':
-                columns = get_available_columns(conn.cursor(), data['table'])
+            try:
+                if data['table'] != '':
+                    columns = get_available_columns(conn.cursor(), data['table'])
+            finally:
+                conn.close()
         return {"columns": columns}, 200
 api.add_resource(setTable, '/ocbexapi/setTable')
 
@@ -181,13 +187,16 @@ class setXColumn(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            if data['table'] != '' and data['x_column'] != '':
-                x1_data = get_column_data(cursor, data['table'], data['x_column'])
-                x_data = x1_data
-            if data['table'] != '' and data['x2_column'] != '' and data['x2_column'] != 'None':
-                x2_data = get_column_data(cursor, data['table'], data['x2_column'])
-                x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
+            try:
+                cursor = conn.cursor()
+                if data['table'] != '' and data['x_column'] != '':
+                    x1_data = get_column_data(cursor, data['table'], data['x_column'])
+                    x_data = x1_data
+                if data['table'] != '' and data['x2_column'] != '' and data['x2_column'] != 'None':
+                    x2_data = get_column_data(cursor, data['table'], data['x2_column'])
+                    x_data = [None if (x1 is None or x2 is None) else x1 - x2 for (x1, x2) in zip(x1_data, x2_data)]
+            finally:
+                conn.close()
         return {"x_data": x_data}, 200
 api.add_resource(setXColumn, '/ocbexapi/setXColumn')
 
@@ -202,8 +211,11 @@ class setYColumn(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            if data['table'] != '' and data['y_column'] != '':
-                y_data = get_column_data(conn.cursor(), data['table'], data['y_column'])
+            try:
+                if data['table'] != '' and data['y_column'] != '':
+                    y_data = get_column_data(conn.cursor(), data['table'], data['y_column'])
+            finally:
+                conn.close()
         return {"y_data": y_data}, 200
 api.add_resource(setYColumn, '/ocbexapi/setYColumn')
 
@@ -218,8 +230,11 @@ class setColorColumn(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            if data['table'] != '' and data['color_column'] != '':
-                color_data = get_column_data(conn.cursor(), data['table'], data['color_column'])
+            try:
+                if data['table'] != '' and data['color_column'] != '':
+                    color_data = get_column_data(conn.cursor(), data['table'], data['color_column'])
+            finally:
+                conn.close()
         return {"color_data": color_data}, 200
 api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 
@@ -234,15 +249,18 @@ class setTableData(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            table_columns_use = [key for key, value in data['table_columns'].items() if value]
-            if data['table'] != '' and len(table_columns_use) > 0:
-                for c in table_columns_use:
-                    try:
-                        col_data = get_column_data(cursor, data['table'], c)
-                        table_data_df[c] = col_data
-                    except Exception as e:
-                        logging.warning("setTableData: error fetching column %r: %s", c, e)
+            try:
+                cursor = conn.cursor()
+                table_columns_use = [key for key, value in data['table_columns'].items() if value]
+                if data['table'] != '' and len(table_columns_use) > 0:
+                    for c in table_columns_use:
+                        try:
+                            col_data = get_column_data(cursor, data['table'], c)
+                            table_data_df[c] = col_data
+                        except Exception as e:
+                            logging.warning("setTableData: error fetching column %r: %s", c, e)
+            finally:
+                conn.close()
         table_data_df.fillna('', inplace=True)
         return {"table_data": table_data_df.to_dict(orient = 'records')}, 200
 api.add_resource(setTableData, '/ocbexapi/setTableData')
@@ -260,20 +278,23 @@ class myPygwalker(Resource):
             if db_path is None:
                 return {"error": "invalid cluster"}, 400
             conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            table_columns_use = [key for key, value in data['table_columns'].items() if value]
-            if data['table'] != '' and len(table_columns_use) > 0:
-                table_data_df = pd.DataFrame()
-                for c in table_columns_use:
-                    try:
-                        col_data = get_column_data(cursor, data['table'], c)
-                        table_data_df[c] = col_data
-                    except Exception as e:
-                        logging.warning("myPygwalker: error fetching column %r: %s", c, e)
-                if len(table_data_df) > 0:
-                    pyg_html_str = pyg.to_html(table_data_df, appearance = 'light',
-                        spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
-                    )
+            try:
+                cursor = conn.cursor()
+                table_columns_use = [key for key, value in data['table_columns'].items() if value]
+                if data['table'] != '' and len(table_columns_use) > 0:
+                    table_data_df = pd.DataFrame()
+                    for c in table_columns_use:
+                        try:
+                            col_data = get_column_data(cursor, data['table'], c)
+                            table_data_df[c] = col_data
+                        except Exception as e:
+                            logging.warning("myPygwalker: error fetching column %r: %s", c, e)
+                    if len(table_data_df) > 0:
+                        pyg_html_str = pyg.to_html(table_data_df, appearance = 'light',
+                            spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
+                        )
+            finally:
+                conn.close()
         return {"pyg_html_str": pyg_html_str}, 200
 api.add_resource(myPygwalker, '/ocbexapi/myPygwalker')
 

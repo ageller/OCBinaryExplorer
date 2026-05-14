@@ -275,6 +275,9 @@ function ExplorerContainer({label, count}){
                     options: options
                 });
             })
+            .catch(error => {
+                console.error('Error fetching available clusters:', error);
+            })
     }, []);
 
     useEffect(() => {
