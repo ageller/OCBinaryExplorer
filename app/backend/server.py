@@ -38,7 +38,7 @@ def set_security_headers(response):
     return response
 
 # directory where all of the sqlite database files are stored (one per cluster)
-data_dir = os.path.join(os.getcwd(), 'database')
+data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database')
 
 def get_available_clusters():
     # get all the available clusters
