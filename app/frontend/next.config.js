@@ -1,6 +1,8 @@
 const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
+    // 'unsafe-eval' is required by PyGwalker, which uses eval() internally to execute its JS bundle.
+    // The risk is limited because PyGwalker output runs inside a sandboxed iframe (srcDoc).
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
