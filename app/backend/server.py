@@ -210,11 +210,25 @@ class myPygwalker(Resource):
     def post(self):
         data = request.json
         pyg_html_str = "Attempting to create PyGwalker instance..."
-        if (len(data['table_data']) > 0):
-            df = pd.DataFrame(data['table_data'])
-            pyg_html_str = pyg.to_html(df, appearance = 'light',
-                spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
-            )
+        if data['cluster'] != '':
+            db_path = _get_db_path(data['cluster'])
+            if db_path is None:
+                return {"error": "invalid cluster"}, 400
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            table_columns_use = [key for key, value in data['table_columns'].items() if value]
+            if data['table'] != '' and len(table_columns_use) > 0:
+                table_data_df = pd.DataFrame()
+                for c in table_columns_use:
+                    try:
+                        col_data = get_column_data(cursor, data['table'], c)
+                        table_data_df[c] = col_data
+                    except:
+                        pass
+                if len(table_data_df) > 0:
+                    pyg_html_str = pyg.to_html(table_data_df, appearance = 'light',
+                        spec = r"""{"config":[{"config":{"defaultAggregated":false,"geoms":["tick"],"coordSystem":"generic","limit":-1},"encodings":{"dimensions":[{"fid":"stage","name":"stage","semanticType":"quantitative","analyticType":"dimension","offset":0}],"measures":[{"fid":"gw_count_fid","name":"Row count","analyticType":"measure","semanticType":"quantitative","aggName":"sum","computed":true,"expression":{"op":"one","params":[],"as":"gw_count_fid"}}],"rows":[],"columns":[],"color":[],"opacity":[],"size":[],"shape":[],"radius":[],"theta":[],"longitude":[],"latitude":[],"geoId":[],"details":[],"filters":[],"text":[]},"layout":{"showActions":false,"showTableSummary":false,"stack":"none","interactiveScale":false,"zeroScale":false,"size":{"mode":"auto","width":320,"height":200},"format":{},"geoKey":"name","resolve":{"x":false,"y":false,"color":false,"opacity":false,"shape":false,"size":false},"scaleIncludeUnmatchedChoropleth":false,"showAllGeoshapeInChoropleth":false,"colorPalette":"","useSvg":false,"scale":{"opacity":{},"size":{}}},"visId":"f59bfc375cfee","name":"Chart 1"}],"chart_map":{},"workflow_list":[{"workflow":[{"type":"view","query":[{"op":"raw","fields":[]}]}]}],"version":"0.4.9.11"}"""
+                    )
         return {"pyg_html_str": pyg_html_str}, 200
 api.add_resource(myPygwalker, '/ocbexapi/myPygwalker')
 

@@ -452,7 +452,11 @@ function ExplorerContainer({label, count}){
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(plotData),
+            body: JSON.stringify({
+                cluster: plotData.cluster,
+                table: plotData.table,
+                table_columns: plotData.table_columns,
+            }),
           })
             .then(response => {
                 if (!response.ok) {
