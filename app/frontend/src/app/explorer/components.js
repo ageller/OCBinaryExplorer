@@ -138,7 +138,6 @@ function ExplorerContainer({label, count}){
     const left = left0 + count*5;
 
     const divRef = useRef(null);
-    const iframeRef = useRef(null);
     const [pos, setPos] = useState({ left: left, top: top, maxWidth: window.innerWidth - left0, maxHeight: window.innerHeight - top0 });
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -777,6 +776,11 @@ function ExplorerContainer({label, count}){
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
                 }))
+            } else if (plotData.type === "explore"){
+                setTableLayout((prevData) => ({
+                    ...prevData,
+                    maxHeight: (divRef.current.clientHeight - 40) + 'px'
+                }))
             }
 
         }
@@ -966,18 +970,11 @@ function ExplorerContainer({label, count}){
                 if (plotData.table_data.length > 0) {
 
                     return (
-                        <div style= {{marginTop: "40px"}}>
+                        <div style={{marginTop: '40px'}}>
                             <iframe
-                                ref={iframeRef}
-                                onLoad={() => {
-                                    try {
-                                        const doc = iframeRef.current?.contentDocument;
-                                        if (doc?.documentElement) doc.documentElement.style.overflow = 'hidden';
-                                    } catch(e) {}
-                                }}
                                 srcDoc={plotData.pygwalker_html_data}
                                 sandbox="allow-scripts allow-downloads allow-same-origin"
-                                style={{width: '100%', height: '100vh', border: 'none'}}
+                                style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
                                 title="Data Explorer"
                             />
                         </div>
