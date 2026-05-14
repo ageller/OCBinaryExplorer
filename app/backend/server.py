@@ -16,8 +16,12 @@ import pygwalker as pyg
 app = Flask(__name__)
 # cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
-# RESTful API
 
+# All request bodies are short JSON (cluster/table names + column booleans).
+# 64KB is well above any legitimate payload; Flask returns 413 automatically if exceeded.
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1024
+
+# RESTful API
 api = Api(app)
 
 # Rate limiting — counts per worker process (9 workers → multiply by 9 for true max).
