@@ -75,6 +75,24 @@ def _qi(name):
     """Quote an SQL identifier with double-quotes (SQLite standard)."""
     return '"' + name.replace('"', '""') + '"'
 
+def _validate_request(str_fields=(), dict_fields=()):
+    """Check that request.json is present and each named field has the expected type.
+    Returns (data, None) on success or (None, (error_dict, status)) on failure."""
+    data = request.json
+    if data is None:
+        return None, ({"error": "request body must be JSON"}, 400)
+    for f in str_fields:
+        if f not in data:
+            return None, ({"error": f"missing field: {f}"}, 400)
+        if not isinstance(data[f], str):
+            return None, ({"error": f"field must be a string: {f}"}, 400)
+    for f in dict_fields:
+        if f not in data:
+            return None, ({"error": f"missing field: {f}"}, 400)
+        if not isinstance(data[f], dict):
+            return None, ({"error": f"field must be an object: {f}"}, 400)
+    return data, None
+
 def get_available_tables(cursor):
     # get all the available tables
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -121,7 +139,8 @@ api.add_resource(getAvailableClusters, '/ocbexapi/getAvailableClusters')
 class setCluster(Resource):
     # set the database and return the available tables
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster',))
+        if err: return err
         tables = []
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
@@ -135,7 +154,8 @@ api.add_resource(setCluster, '/ocbexapi/setCluster')
 class setTable(Resource):
     # set the database and return the available tables
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table'))
+        if err: return err
         columns = []
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
@@ -150,7 +170,8 @@ api.add_resource(setTable, '/ocbexapi/setTable')
 class setXColumn(Resource):
     # set the database and return the available tables
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table', 'x_column', 'x2_column'))
+        if err: return err
         x1_data = []
         x2_data = []
         x_data = []
@@ -172,7 +193,8 @@ api.add_resource(setXColumn, '/ocbexapi/setXColumn')
 class setYColumn(Resource):
     # set the database and return the available tables
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table', 'y_column'))
+        if err: return err
         y_data = []
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
@@ -187,7 +209,8 @@ api.add_resource(setYColumn, '/ocbexapi/setYColumn')
 class setColorColumn(Resource):
     # set the database and return the available tables
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table', 'color_column'))
+        if err: return err
         color_data = []
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
@@ -202,7 +225,8 @@ api.add_resource(setColorColumn, '/ocbexapi/setColorColumn')
 class setTableData(Resource):
     decorators = [limiter.limit("60 per minute")]
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table'), dict_fields=('table_columns',))
+        if err: return err
         table_data_df = pd.DataFrame()
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
@@ -227,7 +251,8 @@ class myPygwalker(Resource):
     # I created a plot that had configs I liked, and copied that config line below
     # note that this requires pygwalker version 0.4.9.11
     def post(self):
-        data = request.json
+        data, err = _validate_request(str_fields=('cluster', 'table'), dict_fields=('table_columns',))
+        if err: return err
         pyg_html_str = "Attempting to create PyGwalker instance..."
         if data['cluster'] != '':
             db_path = _get_db_path(data['cluster'])
