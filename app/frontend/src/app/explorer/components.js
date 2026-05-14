@@ -138,7 +138,6 @@ function ExplorerContainer({label, count}){
     const left = left0 + count*5;
 
     const divRef = useRef(null);
-    const iframeRef = useRef(null);
     const [pos, setPos] = useState({ left: left, top: top, maxWidth: window.innerWidth - left0, maxHeight: window.innerHeight - top0 });
     const [diffPos, setDiffPos] = useState({ diffX: 0, diffY: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -777,6 +776,11 @@ function ExplorerContainer({label, count}){
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
                 }))
+            } else if (plotData.type === "explore"){
+                setTableLayout((prevData) => ({
+                    ...prevData,
+                    maxHeight: (divRef.current.clientHeight - 250) + 'px'
+                }))
             }
 
         }
@@ -839,15 +843,6 @@ function ExplorerContainer({label, count}){
     };
     
 
-
-    const hideIframeScrollbar = () => {
-        try {
-            const doc = iframeRef.current?.contentDocument;
-            if (doc?.documentElement) {
-                doc.documentElement.style.overflow = 'hidden';
-            }
-        } catch (e) {}
-    };
 
     const visualizeData = () => {
         var dataUse;
@@ -975,13 +970,11 @@ function ExplorerContainer({label, count}){
                 if (plotData.table_data.length > 0) {
 
                     return (
-                        <div style={{position: 'absolute', top: '40px', left: 0, right: 0, bottom: 0, overflow: 'hidden'}}>
+                        <div style= {{marginTop: "40px"}}>
                             <iframe
-                                ref={iframeRef}
-                                onLoad={hideIframeScrollbar}
                                 srcDoc={plotData.pygwalker_html_data}
                                 sandbox="allow-scripts allow-downloads allow-same-origin"
-                                style={{width: '100%', height: '100%', border: 'none'}}
+                                style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
                                 title="Data Explorer"
                             />
                         </div>
