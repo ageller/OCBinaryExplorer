@@ -777,11 +777,6 @@ function ExplorerContainer({label, count}){
                     ...prevData,
                     maxHeight: (divRef.current.clientHeight - 250) + 'px'
                 }))
-            } else if (plotData.type === "explore"){
-                setTableLayout((prevData) => ({
-                    ...prevData,
-                    maxHeight: (divRef.current.clientHeight - 40) + 'px'
-                }))
             }
 
         }
@@ -980,13 +975,13 @@ function ExplorerContainer({label, count}){
                 if (plotData.table_data.length > 0) {
 
                     return (
-                        <div style= {{marginTop: "40px"}}>
+                        <div style={{position: 'absolute', top: '40px', left: 0, right: 0, bottom: 0, overflow: 'hidden'}}>
                             <iframe
                                 ref={iframeRef}
                                 onLoad={hideIframeScrollbar}
                                 srcDoc={plotData.pygwalker_html_data}
                                 sandbox="allow-scripts allow-downloads allow-same-origin"
-                                style={{width: '100%', height: tableLayout.maxHeight, border: 'none'}}
+                                style={{width: '100%', height: '100%', border: 'none'}}
                                 title="Data Explorer"
                             />
                         </div>
