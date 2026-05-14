@@ -20,7 +20,7 @@ const HeaderTop = React.forwardRef(({ title, subtitle, subsubtitle }, ref) => {
 function Copyright(){
     return(
         <div>
-            © 2023-2025 <b><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></b> 
+            © 2023-2026 <b><a href = "https://faculty.wcas.northwestern.edu/aaron-geller/index.html">Aaron M. Geller</a></b> 
         </div>
     )
 }
