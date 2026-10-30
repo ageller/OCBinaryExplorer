@@ -3,6 +3,7 @@ from flask_restful import Api, Resource
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import logging
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # from flask_cors import CORS, cross_origin
 
@@ -14,6 +15,10 @@ import pygwalker as pyg
 
 # Initializing flask app
 app = Flask(__name__)
+# nginx is the only client that can reach gunicorn (bound to 127.0.0.1), so trust its X-Forwarded-For
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
+
+
 # cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
