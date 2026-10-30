@@ -754,14 +754,14 @@ function ExplorerContainer({label, count}){
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
                     xaxis: {
-                        title: xtitle,
+                        title: {text: xtitle},
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
                         type: 'linear'
                     },
                     yaxis: {
-                        title: 'N', 
+                        title: {text: 'N'},
                         range: [plotData.ymin, plotData.ymax], 
                         showline: true,
                         zeroline: false,
@@ -779,14 +779,14 @@ function ExplorerContainer({label, count}){
                 setPlotlyLayout((prevData) => ({
                     ...prevData,
                     xaxis: {
-                        title: xtitle,
+                        title: {text: xtitle},
                         range: [plotData.xmin, plotData.xmax], 
                         showline: true,
                         zeroline: false,
                         type: plotData.x_log10 ? 'log' : 'linear'
                     },
                     yaxis: {
-                        title: plotData.y_column, 
+                        title: {text: plotData.y_column},
                         range: [plotData.ymin, plotData.ymax], 
                         showline: true,
                         zeroline: false,
@@ -902,7 +902,7 @@ function ExplorerContainer({label, count}){
                         colorscale: 'Viridis',
                         colorbar: {
                             thickness:10,
-                            title: plotData.color_column,
+                            title: {text: plotData.color_column},
                         },
                         cmin: plotData.cmin === "" ? Math.min(...plotData.color) : parseFloat(plotData.cmin),
                         cmax: plotData.cmax === "" ? Math.max(...plotData.color) : parseFloat(plotData.cmax),
