@@ -10,8 +10,28 @@ import {GlobalStateContext} from '../context/globalState';
 
 import {Disclaimer} from '../sharedComponents/misc'
 
-import dynamic from 'next/dynamic';
-const DynamicPlot = dynamic(() => import('react-plotly.js'), { ssr: false });
+// minimal plotly wrapper (replaces react-plotly.js); plotly is imported in the effect so it only loads in the browser
+function DynamicPlot({data, layout, config}){
+    const plotRef = useRef(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        import('plotly.js-cartesian-dist-min').then(({default: Plotly}) => {
+            if (!cancelled && plotRef.current) Plotly.react(plotRef.current, data, layout, config);
+        });
+        return () => { cancelled = true; };
+    }, [data, layout, config]);
+
+    // clean up the plot when the component unmounts
+    useEffect(() => {
+        const el = plotRef.current;
+        return () => {
+            import('plotly.js-cartesian-dist-min').then(({default: Plotly}) => Plotly.purge(el));
+        };
+    }, []);
+
+    return <div ref={plotRef} />;
+}
 
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';

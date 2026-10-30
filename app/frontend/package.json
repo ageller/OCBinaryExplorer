@@ -17,11 +17,10 @@
     "export-to-csv": "^1.4.0",
     "material-react-table": "3.2.1",
     "next": "^16.0.10",
-    "plotly.js": "^3.3.1",
+    "plotly.js-cartesian-dist-min": "^3.7.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^5.5.0",
-    "react-plotly.js": "2.6.0",
     "three": "0.182.0"
   },
   "devDependencies": {
